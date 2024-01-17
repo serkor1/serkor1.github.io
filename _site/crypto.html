@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.450">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>A(nother) Quarto Blog - Getting Cryptocurrency OHLC-V Market Data in R</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-dark.min.css" rel="prefetch" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+<script src="site_libs/kePrint-0.0.1/kePrint.js"></script>
+<link href="site_libs/lightable-0.0.1/lightable.css" rel="stylesheet">
+<script src="site_libs/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+<script src="site_libs/plotly-binding-4.10.3/plotly.js"></script>
+<script src="site_libs/typedarray-0.1/typedarray.min.js"></script>
+<script src="site_libs/jquery-3.5.1/jquery.min.js"></script>
+<link href="site_libs/crosstalk-1.2.1/css/crosstalk.min.css" rel="stylesheet">
+<script src="site_libs/crosstalk-1.2.1/js/crosstalk.min.js"></script>
+<link href="site_libs/plotly-htmlwidgets-css-2.11.1/plotly-htmlwidgets.css" rel="stylesheet">
+<script src="site_libs/plotly-main-2.11.1/plotly-latest.min.js"></script>
+
+
+<link rel="stylesheet" href="styles.css">
+<meta property="og:title" content="A(nother) Quarto Blog - Getting Cryptocurrency OHLC-V Market Data in R">
+<meta property="og:description" content="The cryptoQuotes package">
+<meta property="og:image" content="logo.png">
+<meta property="og:site-name" content="A(nother) Quarto Blog">
+<meta name="twitter:title" content="A(nother) Quarto Blog - Getting Cryptocurrency OHLC-V Market Data in R">
+<meta name="twitter:description" content="The cryptoQuotes package">
+<meta name="twitter:image" content="logo.png">
+<meta name="twitter:card" content="summary_large_image">
+</head>
+
+<body class="nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container">
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">A(nother) Quarto Blog</span>
+    </a>
+  </div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link active" href="./crypto.html" rel="" target="" aria-current="page">
+ <span class="menu-text">OHLC-V</span></a>
+  </li>  
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="./about.html" rel="" target="">
+ <span class="menu-text">About</span></a>
+  </li>  
+</ul>
+            <div class="quarto-navbar-tools">
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+</div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-full page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    
+<!-- main -->
+<main class="content page-columns page-full column-page" id="quarto-document-content">
+
+
+
+<div class="quarto-about-solana column-page">
+  <div class="about-entity">
+    <div class="entity-contents">
+      <header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Getting Cryptocurrency OHLC-V Market Data in R</h1>
+<p class="subtitle lead">The cryptoQuotes package</p>
+</div>
+<div class="quarto-title-meta">
+  </div>
+</header> <div class="about-links">
+  <a href="https://github.com/serkor1/cryptoQuotes" class="about-link" rel="" target="">
+    <i class="bi bi-github"></i>
+     <span class="about-link-text">Source Code</span>
+  </a>
+  <a href="https://serkor1.github.io/cryptoQuotes/" class="about-link" rel="" target="">
+    <i class="bi bi-book"></i>
+     <span class="about-link-text">Documentation</span>
+  </a>
+</div>
+      <div class="about-contents"><div id="hero-heading">
+<p>A high-level API client for easy access to cryptocurrency market data, including detailed OHLC-V (Open, High, Low, Close, Volume) candles and sentiment indicators. Offers flexible data granularity (seconds to months) from major exchanges, ensuring reliable and stable market information without low-level API calls.</p>
+</div></div>
+    </div>
+    <img src="logo.png" class="about-image
+  rounded " style="width: 15em;">
+  </div>
+</div>
+
+<hr>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># load library</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(cryptoQuotes)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<section id="loading-bitcoin-btc-market-data-in-r" class="level2">
+<h2 data-anchor-id="loading-bitcoin-btc-market-data-in-r">Loading Bitcoin (BTC) market data in R</h2>
+<div class="callout callout-style-default callout-tip callout-titled" title="Supported Exchanges">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Supported Exchanges
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-1" class="callout-1-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># load library</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">availableExchanges</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>ℹ Available exchanges
+✔ binance, kucoin, kraken, bitmart</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Load hourly BTCUSDT</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="do">## from Binance spot</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="fu">tail</span>(</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  BTCUSDT <span class="ot">&lt;-</span> <span class="fu">getQuote</span>(</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">ticker   =</span> <span class="st">"BTCUSDT"</span>,</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">source   =</span> <span class="st">"binance"</span>,</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">futures  =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">interval =</span> <span class="st">"1h"</span> </span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<table class="table table-sm table-striped small" data-quarto-postprocess="true">
+<caption>Bitcoin (BTC) OHLC-V Data</caption>
+<thead>
+<tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th">Index</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">Open</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">High</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">Low</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">Close</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">Volume</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">2024-01-12 11:00:00</td>
+<td style="text-align: center;">46063.62</td>
+<td style="text-align: center;">46267</td>
+<td style="text-align: center;">45941.61</td>
+<td style="text-align: center;">45954.35</td>
+<td style="text-align: left;">1976.90053</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2024-01-12 12:00:00</td>
+<td style="text-align: center;">45954.35</td>
+<td style="text-align: center;">46109</td>
+<td style="text-align: center;">45667.47</td>
+<td style="text-align: center;">45866.56</td>
+<td style="text-align: left;">1852.17109</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">2024-01-12 13:00:00</td>
+<td style="text-align: center;">45866.57</td>
+<td style="text-align: center;">45944.12</td>
+<td style="text-align: center;">45573.44</td>
+<td style="text-align: center;">45779.02</td>
+<td style="text-align: left;">2155.66091</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2024-01-12 14:00:00</td>
+<td style="text-align: center;">45779.02</td>
+<td style="text-align: center;">45904.66</td>
+<td style="text-align: center;">45250.01</td>
+<td style="text-align: center;">45442.02</td>
+<td style="text-align: left;">5702.97549</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">2024-01-12 15:00:00</td>
+<td style="text-align: center;">45442.01</td>
+<td style="text-align: center;">45459.28</td>
+<td style="text-align: center;">44333.44</td>
+<td style="text-align: center;">44462.01</td>
+<td style="text-align: left;">9485.40906</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">2024-01-12 16:00:00</td>
+<td style="text-align: center;">44462</td>
+<td style="text-align: center;">44675.88</td>
+<td style="text-align: center;">43814.02</td>
+<td style="text-align: center;">44179.15</td>
+<td style="text-align: left;">6106.18026</td>
+</tr>
+</tbody><tfoot>
+<tr class="odd">
+<td style="text-align: left; padding: 0; border: 0;"><sup>a</sup> Created with kable and kableExtra</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: left;"></td>
+</tr>
+</tfoot>
+
+</table>
+
+
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>cryptoQuotes<span class="sc">::</span><span class="fu">chart</span>(</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">chart =</span> cryptoQuotes<span class="sc">::</span><span class="fu">kline</span>(</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    cryptoQuotes<span class="sc">::</span>BTCUSDT</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span>  cryptoQuotes<span class="sc">::</span><span class="fu">addVolume</span>() <span class="sc">%&gt;%</span>  cryptoQuotes<span class="sc">::</span><span class="fu">addMA</span>(</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">FUN =</span> TTR<span class="sc">::</span>SMA,</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">n =</span> <span class="dv">7</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span>  cryptoQuotes<span class="sc">::</span><span class="fu">addMA</span>(</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">FUN =</span> TTR<span class="sc">::</span>SMA,</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">n =</span> <span class="dv">14</span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>     cryptoQuotes<span class="sc">::</span><span class="fu">addBBands</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>     cryptoQuotes<span class="sc">::</span><span class="fu">addMACD</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>     cryptoQuotes<span class="sc">::</span><span class="fu">addRSI</span>()</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="plotly html-widget html-fill-item" id="htmlwidget-2c5578e6768eadd65285" style="width:100%;height:928px;"></div>
+<script type="application/json" data-for="htmlwidget-2c5578e6768eadd65285">{"x":{"data":[{"showlegend":false,"yaxis":"y","x":["2022-02-07 00:00:00.000000","2022-02-14 00:00:00.000000","2022-02-21 00:00:00.000000","2022-02-28 00:00:00.000000","2022-03-07 00:00:00.000000","2022-03-14 00:00:00.000000","2022-03-21 00:00:00.000000","2022-03-28 00:00:00.000000","2022-04-04 00:00:00.000000","2022-04-11 00:00:00.000000","2022-04-18 00:00:00.000000","2022-04-25 00:00:00.000000","2022-05-02 00:00:00.000000","2022-05-09 00:00:00.000000","2022-05-16 00:00:00.000000","2022-05-23 00:00:00.000000","2022-05-30 00:00:00.000000","2022-06-06 00:00:00.000000","2022-06-13 00:00:00.000000","2022-06-20 00:00:00.000000","2022-06-27 00:00:00.000000","2022-07-04 00:00:00.000000","2022-07-11 00:00:00.000000","2022-07-18 00:00:00.000000","2022-07-25 00:00:00.000000","2022-08-01 00:00:00.000000","2022-08-08 00:00:00.000000","2022-08-15 00:00:00.000000","2022-08-22 00:00:00.000000","2022-08-29 00:00:00.000000","2022-09-05 00:00:00.000000","2022-09-12 00:00:00.000000","2022-09-19 00:00:00.000000","2022-09-26 00:00:00.000000","2022-10-03 00:00:00.000000","2022-10-10 00:00:00.000000","2022-10-17 00:00:00.000000","2022-10-24 00:00:00.000000","2022-10-31 00:00:00.000000","2022-11-07 00:00:00.000000","2022-11-14 00:00:00.000000","2022-11-21 00:00:00.000000","2022-11-28 00:00:00.000000","2022-12-05 00:00:00.000000","2022-12-12 00:00:00.000000","2022-12-19 00:00:00.000000","2022-12-26 00:00:00.000000","2023-01-02 00:00:00.000000","2023-01-09 00:00:00.000000","2023-01-16 00:00:00.000000","2023-01-23 00:00:00.000000","2023-01-30 00:00:00.000000","2023-02-06 00:00:00.000000","2023-02-13 00:00:00.000000","2023-02-20 00:00:00.000000","2023-02-27 00:00:00.000000","2023-03-06 00:00:00.000000","2023-03-13 00:00:00.000000","2023-03-20 00:00:00.000000","2023-03-27 00:00:00.000000","2023-04-03 00:00:00.000000","2023-04-10 00:00:00.000000","2023-04-17 00:00:00.000000","2023-04-24 00:00:00.000000","2023-05-01 00:00:00.000000","2023-05-08 00:00:00.000000","2023-05-15 00:00:00.000000","2023-05-22 00:00:00.000000","2023-05-29 00:00:00.000000","2023-06-05 00:00:00.000000","2023-06-12 00:00:00.000000","2023-06-19 00:00:00.000000","2023-06-26 00:00:00.000000","2023-07-03 00:00:00.000000","2023-07-10 00:00:00.000000","2023-07-17 00:00:00.000000","2023-07-24 00:00:00.000000","2023-07-31 00:00:00.000000","2023-08-07 00:00:00.000000","2023-08-14 00:00:00.000000","2023-08-21 00:00:00.000000","2023-08-28 00:00:00.000000","2023-09-04 00:00:00.000000","2023-09-11 00:00:00.000000","2023-09-18 00:00:00.000000","2023-09-25 00:00:00.000000","2023-10-02 00:00:00.000000","2023-10-09 00:00:00.000000","2023-10-16 00:00:00.000000","2023-10-23 00:00:00.000000","2023-10-30 00:00:00.000000","2023-11-06 00:00:00.000000","2023-11-13 00:00:00.000000","2023-11-20 00:00:00.000000","2023-11-27 00:00:00.000000","2023-12-04 00:00:00.000000","2023-12-11 00:00:00.000000","2023-12-18 00:00:00.000000","2023-12-25 00:00:00.000000"],"open":[42380.870000000003,42053.650000000001,38386.889999999999,37699.080000000002,38420.800000000003,37777.349999999999,41262.110000000001,46827.760000000002,46407.360000000001,42158.849999999999,39678.110000000001,39450.120000000003,38468.349999999999,34038.389999999999,31328.889999999999,30293.93,29468.099999999999,29919.200000000001,26574.529999999999,20574,21038.080000000002,19315.830000000002,20861.110000000001,20799.580000000002,22577.130000000001,23296.360000000001,23174.389999999999,24305.25,21516.700000000001,19555.610000000001,20000.299999999999,21826.869999999999,19417.450000000001,18809.130000000001,19057.740000000002,19439.959999999999,19262.98,19570.400000000001,20627.48,20905.580000000002,16331.780000000001,16279.5,16428.77,17106.650000000001,17085.049999999999,16739,16832.110000000001,16617.169999999998,17127.830000000002,20872.990000000002,22706.02,23743.369999999999,22932.91,21782.369999999999,24272.509999999998,23554.849999999999,22430.240000000002,21998.049999999999,27972.869999999999,27968.049999999999,28171.869999999999,28323.759999999998,30304.66,27590.59,29233.200000000001,28430.09,26917.610000000001,26747.779999999999,28065.009999999998,27115.200000000001,25925.540000000001,26339.98,30462.669999999998,30617.02,30160.709999999999,30232,30083.75,29281.09,29088.43,29303.849999999999,26190,26101.779999999999,25971.209999999999,25841.599999999999,26527.5,26248.389999999999,27992.580000000002,27917.060000000001,27154.139999999999,29992.459999999999,34525.879999999997,35011.889999999999,37064.129999999997,37359.849999999999,37447.419999999998,39972.260000000002,43789.5,41374.639999999999,42991.5],"close":[42053.660000000003,38386.889999999999,37699.07,38420.809999999998,37777.339999999997,41262.110000000001,46827.760000000002,46407.349999999999,42158.849999999999,39678.120000000003,39450.129999999997,38468.349999999999,34038.400000000001,31328.889999999999,30293.939999999999,29468.099999999999,29919.209999999999,26574.529999999999,20574,21038.07,19315.830000000002,20862.470000000001,20798.16,22579.68,23293.32,23174.389999999999,24305.240000000002,21515.610000000001,19555.610000000001,20000.299999999999,21826.869999999999,19416.18,18807.380000000001,19056.799999999999,19439.02,19262.98,19570.400000000001,20627.48,20905.580000000002,16329.85,16280.23,16428.779999999999,17105.700000000001,17085.049999999999,16738.209999999999,16832.110000000001,16616.75,17127.830000000002,20871.5,22707.880000000001,23742.299999999999,22932.91,21783.540000000001,24271.759999999998,23554.849999999999,22430.240000000002,21997.110000000001,27972.869999999999,27968.049999999999,28171.869999999999,28323.759999999998,30304.650000000001,27590.599999999999,29233.209999999999,28430.099999999999,26917.619999999999,26747.779999999999,28065,27115.209999999999,25925.549999999999,26339.970000000001,30462.66,30617.029999999999,30160.709999999999,30231.990000000002,30083.75,29281.09,29088.419999999998,29303.84,26189.990000000002,26101.77,25971.209999999999,25841.610000000001,26527.509999999998,26248.380000000001,27992.57,27917.049999999999,27154.150000000001,29992.459999999999,34525.889999999999,35011.879999999997,37064.129999999997,37359.860000000001,37447.43,39972.260000000002,43789.510000000002,41374.650000000001,42991.5,42723.160000000003],"high":[45821,44751.400000000001,40348.449999999997,45400,42594.059999999998,42400,46999,48189.839999999997,47200,42414.709999999999,42976,40797.309999999998,40023.769999999997,34243.150000000001,31328.900000000001,30670.509999999998,32399,31765.639999999999,26895.84,21888,21539.849999999999,22527.369999999999,21684.540000000001,24276.740000000002,24668,23647.68,25047.560000000001,25211.32,21900,20576.25,21860,22799,19956,20385.860000000001,20475,19951.869999999999,19706.66,21085,21480.650000000001,21069.77,17190,16812.630000000001,17324,17424.25,18387.950000000001,17061.27,16972.830000000002,17176.990000000002,21258,23371.799999999999,23960.540000000001,24255,23452,25250,25250,24000,22602.189999999999,28390.099999999999,28868.049999999999,29184.68,28775,31000,30485,30036,29820,28631.009999999998,27663.59,28261.32,28447.139999999999,27391.77,26839.990000000002,31431.939999999999,31282,31500,31804.200000000001,30417.459999999999,30099.580000000002,30047.5,30244,29695.32,26819.27,28142.849999999999,26445.5,26888,27483.57,28065.509999999998,28580,27987.93,30379.990000000002,35280,35984.989999999998,37972.239999999998,37980,38414,40250,44700,43804.5,44398.260000000002,43802.32],"low":[41645.849999999999,38000,34322.279999999999,37450.169999999998,37155,37555,40467.940000000002,44200,41868,39200,38536.510000000002,37386.379999999997,33713.949999999997,26700,28654.470000000001,28019.560000000001,29282.360000000001,26560,17622,19637.029999999999,18626,19055.310000000001,18910.939999999999,20762.450000000001,20706.5,22400,22664.689999999999,20761.900000000001,19520,19540,18510.77,19320.009999999998,18125.98,18471.279999999999,18959.68,18190,18650,19157,20031.240000000002,15588,15815.209999999999,15476,15995.27,16678.830000000002,16527.32,16256.299999999999,16333,16548.700000000001,17104.66,20407.150000000001,22300,22500,21451,21351.07,22722,21971.130000000001,19549.09,21813.880000000001,26601.799999999999,26508.139999999999,27200.240000000002,28170,27125,26942.82,27666.950000000001,25811.459999999999,26361.200000000001,25871.889999999999,26505,25351.02,24800,26256.610000000001,29500,29701.02,29900,29512,28861.900000000001,28585.700000000001,28701.029999999999,25166,25300,25333.75,25372.509999999998,24901,26122.080000000002,25990.459999999999,27160.5,26538.66,27112.66,29883.599999999999,34025,34523.059999999998,34800,35632.010000000002,36707,39972.260000000002,40222,40542.93,41637.599999999999],"increasing":{"line":{"color":"palegreen"}},"decreasing":{"line":{"color":"tomato"}},"type":"candlestick","line":{"color":"rgba(31,119,180,1)"},"xaxis":"x","frame":null},{"x":["2022-03-21 00:00:00.000000","2022-03-28 00:00:00.000000","2022-04-04 00:00:00.000000","2022-04-11 00:00:00.000000","2022-04-18 00:00:00.000000","2022-04-25 00:00:00.000000","2022-05-02 00:00:00.000000","2022-05-09 00:00:00.000000","2022-05-16 00:00:00.000000","2022-05-23 00:00:00.000000","2022-05-30 00:00:00.000000","2022-06-06 00:00:00.000000","2022-06-13 00:00:00.000000","2022-06-20 00:00:00.000000","2022-06-27 00:00:00.000000","2022-07-04 00:00:00.000000","2022-07-11 00:00:00.000000","2022-07-18 00:00:00.000000","2022-07-25 00:00:00.000000","2022-08-01 00:00:00.000000","2022-08-08 00:00:00.000000","2022-08-15 00:00:00.000000","2022-08-22 00:00:00.000000","2022-08-29 00:00:00.000000","2022-09-05 00:00:00.000000","2022-09-12 00:00:00.000000","2022-09-19 00:00:00.000000","2022-09-26 00:00:00.000000","2022-10-03 00:00:00.000000","2022-10-10 00:00:00.000000","2022-10-17 00:00:00.000000","2022-10-24 00:00:00.000000","2022-10-31 00:00:00.000000","2022-11-07 00:00:00.000000","2022-11-14 00:00:00.000000","2022-11-21 00:00:00.000000","2022-11-28 00:00:00.000000","2022-12-05 00:00:00.000000","2022-12-12 00:00:00.000000","2022-12-19 00:00:00.000000","2022-12-26 00:00:00.000000","2023-01-02 00:00:00.000000","2023-01-09 00:00:00.000000","2023-01-16 00:00:00.000000","2023-01-23 00:00:00.000000","2023-01-30 00:00:00.000000","2023-02-06 00:00:00.000000","2023-02-13 00:00:00.000000","2023-02-20 00:00:00.000000","2023-02-27 00:00:00.000000","2023-03-06 00:00:00.000000","2023-03-13 00:00:00.000000","2023-03-20 00:00:00.000000","2023-03-27 00:00:00.000000","2023-04-03 00:00:00.000000","2023-04-10 00:00:00.000000","2023-04-17 00:00:00.000000","2023-04-24 00:00:00.000000","2023-05-01 00:00:00.000000","2023-05-08 00:00:00.000000","2023-05-15 00:00:00.000000","2023-05-22 00:00:00.000000","2023-05-29 00:00:00.000000","2023-06-05 00:00:00.000000","2023-06-12 00:00:00.000000","2023-06-19 00:00:00.000000","2023-06-26 00:00:00.000000","2023-07-03 00:00:00.000000","2023-07-10 00:00:00.000000","2023-07-17 00:00:00.000000","2023-07-24 00:00:00.000000","2023-07-31 00:00:00.000000","2023-08-07 00:00:00.000000","2023-08-14 00:00:00.000000","2023-08-21 00:00:00.000000","2023-08-28 00:00:00.000000","2023-09-04 00:00:00.000000","2023-09-11 00:00:00.000000","2023-09-18 00:00:00.000000","2023-09-25 00:00:00.000000","2023-10-02 00:00:00.000000","2023-10-09 00:00:00.000000","2023-10-16 00:00:00.000000","2023-10-23 00:00:00.000000","2023-10-30 00:00:00.000000","2023-11-06 00:00:00.000000","2023-11-13 00:00:00.000000","2023-11-20 00:00:00.000000","2023-11-27 00:00:00.000000","2023-12-04 00:00:00.000000","2023-12-11 00:00:00.000000","2023-12-18 00:00:00.000000","2023-12-25 00:00:00.000000"],"y":[40346.805714285714,40968.761428571423,41507.612857142849,41790.334285714271,41937.37999999999,42036.095714285701,41004.137142857136,38790.01285714285,36488.097142857136,34675.132857142853,33281.002857142848,31441.631428571422,28885.295714285709,27028.10571428571,25311.954285714277,23964.601428571419,22726.038571428562,21677.534285714275,21208.78999999999,21580.274285714277,22047.012857142843,22361.267142857127,22174.572857142837,22060.592857142834,21953.04857142855,21399.171428571404,20775.312857142831,20025.535714285688,19728.879999999972,19687.075714285686,19625.661428571399,19454.319999999974,19667.091428571406,19313.15857142855,18916.505714285693,18486.471428571407,18178.288571428551,17823.238571428552,17267.628571428551,16685.704285714266,16726.689999999981,16847.775714285694,17482.449999999983,18282.761428571412,19233.797142857129,20118.754285714273,20826.101428571415,21919.674285714274,22837.819999999989,23060.497142857133,22958.958571428557,23563.3257142857,24282.631428571414,25195.249999999982,25774.107142857127,26738.364285714266,27475.558571428555,28509.287142857127,28574.605714285699,28424.544285714273,28221.102857142843,28184.137142857129,27728.502857142845,27490.638571428553,27077.318571428557,27367.684285714269,27896.171428571415,28383.732857142841,28693.30285714284,29117.379999999983,29596.742857142843,29989.378571428555,29823.832857142839,29191.398571428552,28611.549999999981,28002.867142857122,27396.847142857125,27003.478571428557,26597.758571428556,26410.434285714269,26657.157142857126,26807.497142857126,27381.961428571412,28622.572857142841,29834.625714285699,31379.732857142841,32717.917142857124,34079.39999999998,35910.558571428555,37881.565714285694,38859.959999999977,39999.905714285691,40808.338571428554],"type":"scatter","mode":"lines","name":"SMA(n=7)","marker":{"color":"rgba(255,127,14,1)","line":{"color":"rgba(255,127,14,1)"}},"error_y":{"color":"rgba(255,127,14,1)"},"error_x":{"color":"rgba(255,127,14,1)"},"line":{"color":"rgba(255,127,14,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["2022-05-09 00:00:00.000000","2022-05-16 00:00:00.000000","2022-05-23 00:00:00.000000","2022-05-30 00:00:00.000000","2022-06-06 00:00:00.000000","2022-06-13 00:00:00.000000","2022-06-20 00:00:00.000000","2022-06-27 00:00:00.000000","2022-07-04 00:00:00.000000","2022-07-11 00:00:00.000000","2022-07-18 00:00:00.000000","2022-07-25 00:00:00.000000","2022-08-01 00:00:00.000000","2022-08-08 00:00:00.000000","2022-08-15 00:00:00.000000","2022-08-22 00:00:00.000000","2022-08-29 00:00:00.000000","2022-09-05 00:00:00.000000","2022-09-12 00:00:00.000000","2022-09-19 00:00:00.000000","2022-09-26 00:00:00.000000","2022-10-03 00:00:00.000000","2022-10-10 00:00:00.000000","2022-10-17 00:00:00.000000","2022-10-24 00:00:00.000000","2022-10-31 00:00:00.000000","2022-11-07 00:00:00.000000","2022-11-14 00:00:00.000000","2022-11-21 00:00:00.000000","2022-11-28 00:00:00.000000","2022-12-05 00:00:00.000000","2022-12-12 00:00:00.000000","2022-12-19 00:00:00.000000","2022-12-26 00:00:00.000000","2023-01-02 00:00:00.000000","2023-01-09 00:00:00.000000","2023-01-16 00:00:00.000000","2023-01-23 00:00:00.000000","2023-01-30 00:00:00.000000","2023-02-06 00:00:00.000000","2023-02-13 00:00:00.000000","2023-02-20 00:00:00.000000","2023-02-27 00:00:00.000000","2023-03-06 00:00:00.000000","2023-03-13 00:00:00.000000","2023-03-20 00:00:00.000000","2023-03-27 00:00:00.000000","2023-04-03 00:00:00.000000","2023-04-10 00:00:00.000000","2023-04-17 00:00:00.000000","2023-04-24 00:00:00.000000","2023-05-01 00:00:00.000000","2023-05-08 00:00:00.000000","2023-05-15 00:00:00.000000","2023-05-22 00:00:00.000000","2023-05-29 00:00:00.000000","2023-06-05 00:00:00.000000","2023-06-12 00:00:00.000000","2023-06-19 00:00:00.000000","2023-06-26 00:00:00.000000","2023-07-03 00:00:00.000000","2023-07-10 00:00:00.000000","2023-07-17 00:00:00.000000","2023-07-24 00:00:00.000000","2023-07-31 00:00:00.000000","2023-08-07 00:00:00.000000","2023-08-14 00:00:00.000000","2023-08-21 00:00:00.000000","2023-08-28 00:00:00.000000","2023-09-04 00:00:00.000000","2023-09-11 00:00:00.000000","2023-09-18 00:00:00.000000","2023-09-25 00:00:00.000000","2023-10-02 00:00:00.000000","2023-10-09 00:00:00.000000","2023-10-16 00:00:00.000000","2023-10-23 00:00:00.000000","2023-10-30 00:00:00.000000","2023-11-06 00:00:00.000000","2023-11-13 00:00:00.000000","2023-11-20 00:00:00.000000","2023-11-27 00:00:00.000000","2023-12-04 00:00:00.000000","2023-12-11 00:00:00.000000","2023-12-18 00:00:00.000000","2023-12-25 00:00:00.000000"],"y":[39568.409285714282,38728.429285714279,38091.372857142844,37535.668571428563,36689.505714285704,35460.695714285706,34016.121428571423,32050.983571428565,30226.349285714277,28700.585714285706,27479.268571428565,26325.210714285706,25232.784999999996,24537.55928571428,23836.610714285704,23069.587142857134,22393.315714285705,21815.291428571418,21303.980714285706,21177.793571428563,21036.274285714277,21045.073571428562,20930.824285714272,20843.127142857131,20703.684285714273,20533.131428571418,20044.2357142857,19471.0207142857,19107.675714285702,18932.682142857135,18724.44999999999,18360.974285714277,18176.397857142849,18019.924285714278,17882.14071428571,17984.460714285709,18230.524999999991,18528.517857142851,18693.191428571423,18755.90285714285,19323.182142857138,19842.79785714285,20271.473571428563,20620.85999999999,21398.561428571418,22200.692857142847,23010.675714285702,23846.890714285702,24788.092142857135,25268.027857142846,25734.122857142847,26068.965714285703,26353.587857142847,26708.176428571423,26979.122142857137,27233.433571428566,27483.098571428567,27793.302857142855,27971.144999999997,28160.357857142855,28302.417857142857,28438.719999999998,28422.941428571423,28543.690714285713,28533.348571428567,28595.758571428571,28543.785,28497.641428571427,28348.084999999999,28257.11357142857,28300.110714285714,28293.568571428568,28117.133571428571,27924.277857142857,27709.523571428574,27692.414285714291,28009.710000000003,28419.052142857145,28988.74571428572,29564.175714285717,30368.278571428575,31359.027857142857,32631.763571428572,33741.266428571435,34917.265714285713,36094.035714285717],"type":"scatter","mode":"lines","name":"SMA(n=14)","marker":{"color":"rgba(44,160,44,1)","line":{"color":"rgba(44,160,44,1)"}},"error_y":{"color":"rgba(44,160,44,1)"},"error_x":{"color":"rgba(44,160,44,1)"},"line":{"color":"rgba(44,160,44,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["2022-06-20 00:00:00.000000","2022-06-27 00:00:00.000000","2022-07-04 00:00:00.000000","2022-07-11 00:00:00.000000","2022-07-18 00:00:00.000000","2022-07-25 00:00:00.000000","2022-08-01 00:00:00.000000","2022-08-08 00:00:00.000000","2022-08-15 00:00:00.000000","2022-08-22 00:00:00.000000","2022-08-29 00:00:00.000000","2022-09-05 00:00:00.000000","2022-09-12 00:00:00.000000","2022-09-19 00:00:00.000000","2022-09-26 00:00:00.000000","2022-10-03 00:00:00.000000","2022-10-10 00:00:00.000000","2022-10-17 00:00:00.000000","2022-10-24 00:00:00.000000","2022-10-31 00:00:00.000000","2022-11-07 00:00:00.000000","2022-11-14 00:00:00.000000","2022-11-21 00:00:00.000000","2022-11-28 00:00:00.000000","2022-12-05 00:00:00.000000","2022-12-12 00:00:00.000000","2022-12-19 00:00:00.000000","2022-12-26 00:00:00.000000","2023-01-02 00:00:00.000000","2023-01-09 00:00:00.000000","2023-01-16 00:00:00.000000","2023-01-23 00:00:00.000000","2023-01-30 00:00:00.000000","2023-02-06 00:00:00.000000","2023-02-13 00:00:00.000000","2023-02-20 00:00:00.000000","2023-02-27 00:00:00.000000","2023-03-06 00:00:00.000000","2023-03-13 00:00:00.000000","2023-03-20 00:00:00.000000","2023-03-27 00:00:00.000000","2023-04-03 00:00:00.000000","2023-04-10 00:00:00.000000","2023-04-17 00:00:00.000000","2023-04-24 00:00:00.000000","2023-05-01 00:00:00.000000","2023-05-08 00:00:00.000000","2023-05-15 00:00:00.000000","2023-05-22 00:00:00.000000","2023-05-29 00:00:00.000000","2023-06-05 00:00:00.000000","2023-06-12 00:00:00.000000","2023-06-19 00:00:00.000000","2023-06-26 00:00:00.000000","2023-07-03 00:00:00.000000","2023-07-10 00:00:00.000000","2023-07-17 00:00:00.000000","2023-07-24 00:00:00.000000","2023-07-31 00:00:00.000000","2023-08-07 00:00:00.000000","2023-08-14 00:00:00.000000","2023-08-21 00:00:00.000000","2023-08-28 00:00:00.000000","2023-09-04 00:00:00.000000","2023-09-11 00:00:00.000000","2023-09-18 00:00:00.000000","2023-09-25 00:00:00.000000","2023-10-02 00:00:00.000000","2023-10-09 00:00:00.000000","2023-10-16 00:00:00.000000","2023-10-23 00:00:00.000000","2023-10-30 00:00:00.000000","2023-11-06 00:00:00.000000","2023-11-13 00:00:00.000000","2023-11-20 00:00:00.000000","2023-11-27 00:00:00.000000","2023-12-04 00:00:00.000000","2023-12-11 00:00:00.000000","2023-12-18 00:00:00.000000","2023-12-25 00:00:00.000000"],"y":[50566.649360706113,50660.437999389949,50625.805280112101,50694.844065023193,50048.59233136219,49383.726089377946,48375.851364025861,46298.349399381514,43489.791494108416,40935.479099303775,38815.129277948115,36230.78304197955,33510.722955461955,31228.980464887707,30077.306926418732,28861.705712366223,27619.845096882567,25552.313161973827,23697.405605391898,23625.895372768806,23779.288301791912,24097.2640184622,24303.966278588818,24385.158478537898,24141.868742608949,23750.207615118365,23263.643424842241,22385.677280572643,21766.933966540273,21683.107023648256,22112.454371239026,22710.179321798634,23245.067212197915,23646.272694680993,24277.531644170049,24871.802566135804,25242.482394311482,25393.413029026065,26316.083660739743,27521.680264056435,28633.6264245858,29531.311269156653,30605.560302274418,31223.450272124512,31766.744660132365,32147.208823127708,32077.717061337058,31766.436277854766,31287.505117534536,31088.517583282213,31012.117527101986,30986.916144905721,31286.972842119991,31577.576813266318,31909.174234148748,32199.524790692063,32113.144245937568,31271.18671089696,31256.467487962254,31344.766318954273,31370.013234197148,31462.475291825984,31339.079799260831,31382.865649477688,31356.275953706281,31295.260560124912,31297.470305600913,31314.539993373382,31312.648559778223,31429.944538635147,32353.505174475784,33581.96095985279,35002.312202546964,36163.476802860867,37284.911460535404,38698.913214394066,40954.935850208538,42602.845797059643,44218.98262395506,45642.37820745787],"type":"scatter","mode":"lines","showlegend":false,"line":{"color":"steelblue"},"marker":{"color":"rgba(214,39,40,1)","line":{"color":"rgba(214,39,40,1)"}},"error_y":{"color":"rgba(214,39,40,1)"},"error_x":{"color":"rgba(214,39,40,1)"},"xaxis":"x","yaxis":"y","frame":null},{"fillcolor":"rgba(168, 216, 234, 0.1)","x":["2022-06-20 00:00:00.000000","2022-06-27 00:00:00.000000","2022-07-04 00:00:00.000000","2022-07-11 00:00:00.000000","2022-07-18 00:00:00.000000","2022-07-25 00:00:00.000000","2022-08-01 00:00:00.000000","2022-08-08 00:00:00.000000","2022-08-15 00:00:00.000000","2022-08-22 00:00:00.000000","2022-08-29 00:00:00.000000","2022-09-05 00:00:00.000000","2022-09-12 00:00:00.000000","2022-09-19 00:00:00.000000","2022-09-26 00:00:00.000000","2022-10-03 00:00:00.000000","2022-10-10 00:00:00.000000","2022-10-17 00:00:00.000000","2022-10-24 00:00:00.000000","2022-10-31 00:00:00.000000","2022-11-07 00:00:00.000000","2022-11-14 00:00:00.000000","2022-11-21 00:00:00.000000","2022-11-28 00:00:00.000000","2022-12-05 00:00:00.000000","2022-12-12 00:00:00.000000","2022-12-19 00:00:00.000000","2022-12-26 00:00:00.000000","2023-01-02 00:00:00.000000","2023-01-09 00:00:00.000000","2023-01-16 00:00:00.000000","2023-01-23 00:00:00.000000","2023-01-30 00:00:00.000000","2023-02-06 00:00:00.000000","2023-02-13 00:00:00.000000","2023-02-20 00:00:00.000000","2023-02-27 00:00:00.000000","2023-03-06 00:00:00.000000","2023-03-13 00:00:00.000000","2023-03-20 00:00:00.000000","2023-03-27 00:00:00.000000","2023-04-03 00:00:00.000000","2023-04-10 00:00:00.000000","2023-04-17 00:00:00.000000","2023-04-24 00:00:00.000000","2023-05-01 00:00:00.000000","2023-05-08 00:00:00.000000","2023-05-15 00:00:00.000000","2023-05-22 00:00:00.000000","2023-05-29 00:00:00.000000","2023-06-05 00:00:00.000000","2023-06-12 00:00:00.000000","2023-06-19 00:00:00.000000","2023-06-26 00:00:00.000000","2023-07-03 00:00:00.000000","2023-07-10 00:00:00.000000","2023-07-17 00:00:00.000000","2023-07-24 00:00:00.000000","2023-07-31 00:00:00.000000","2023-08-07 00:00:00.000000","2023-08-14 00:00:00.000000","2023-08-21 00:00:00.000000","2023-08-28 00:00:00.000000","2023-09-04 00:00:00.000000","2023-09-11 00:00:00.000000","2023-09-18 00:00:00.000000","2023-09-25 00:00:00.000000","2023-10-02 00:00:00.000000","2023-10-09 00:00:00.000000","2023-10-16 00:00:00.000000","2023-10-23 00:00:00.000000","2023-10-30 00:00:00.000000","2023-11-06 00:00:00.000000","2023-11-13 00:00:00.000000","2023-11-20 00:00:00.000000","2023-11-27 00:00:00.000000","2023-12-04 00:00:00.000000","2023-12-11 00:00:00.000000","2023-12-18 00:00:00.000000","2023-12-25 00:00:00.000000"],"y":[21730.305972627215,19301.88966727673,17380.084386554568,15611.840268310141,14469.688335304476,13505.935243955388,12780.641969307464,12782.236933951805,13213.849505891569,13426.453900696206,13507.594388718529,14133.107291353759,15015.939044538023,15601.456201778932,15607.85974024791,15776.673954300415,15993.423903117411,16938.505504692817,17992.390061274753,17974.754627231174,17502.1790315414,16844.328648204442,16180.035054744485,15733.220521462074,15428.818924057694,15253.335384881611,15104.153241824404,15245.622386094001,15309.855366793034,15335.633976351719,15118.629295427618,14781.077678201342,14517.947121135396,14443.314305318992,14244.018355829932,14071.519100530842,14067.389939021836,14123.83697097392,13778.078672593574,13273.163069276874,13190.452575414183,13459.886397509999,13744.2120310589,14285.509727875473,14909.678673200953,15671.333510205608,16781.172271996253,18120.786055478551,19644.540215798777,20604.634083384437,21087.084472897997,21378.189855094264,21693.576491213324,22226.722186733667,22578.088099184584,22968.048875974608,23774.824087395769,25419.920955769703,25752.799178704423,25824.866014379077,25705.839765802855,25410.779041507361,25199.946534072511,24904.79468385566,24668.200379627058,24527.115106541762,24547.853694399088,24626.950006626623,24611.592440221779,24674.888461364859,24452.032825524217,24124.974040147223,23418.230130786382,22881.759863805804,22431.382206131264,21850.482785605931,20876.078816458124,20466.788202940341,20191.020376044919,20098.09845920877],"type":"scatter","mode":"lines","showlegend":false,"fill":"tonexty","line":{"color":"steelblue"},"name":"rgba(168, 216, 234, 0.1)","marker":{"color":"rgba(148,103,189,1)","line":{"color":"rgba(148,103,189,1)"}},"error_y":{"color":"rgba(148,103,189,1)"},"error_x":{"color":"rgba(148,103,189,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["2022-06-20 00:00:00.000000","2022-06-27 00:00:00.000000","2022-07-04 00:00:00.000000","2022-07-11 00:00:00.000000","2022-07-18 00:00:00.000000","2022-07-25 00:00:00.000000","2022-08-01 00:00:00.000000","2022-08-08 00:00:00.000000","2022-08-15 00:00:00.000000","2022-08-22 00:00:00.000000","2022-08-29 00:00:00.000000","2022-09-05 00:00:00.000000","2022-09-12 00:00:00.000000","2022-09-19 00:00:00.000000","2022-09-26 00:00:00.000000","2022-10-03 00:00:00.000000","2022-10-10 00:00:00.000000","2022-10-17 00:00:00.000000","2022-10-24 00:00:00.000000","2022-10-31 00:00:00.000000","2022-11-07 00:00:00.000000","2022-11-14 00:00:00.000000","2022-11-21 00:00:00.000000","2022-11-28 00:00:00.000000","2022-12-05 00:00:00.000000","2022-12-12 00:00:00.000000","2022-12-19 00:00:00.000000","2022-12-26 00:00:00.000000","2023-01-02 00:00:00.000000","2023-01-09 00:00:00.000000","2023-01-16 00:00:00.000000","2023-01-23 00:00:00.000000","2023-01-30 00:00:00.000000","2023-02-06 00:00:00.000000","2023-02-13 00:00:00.000000","2023-02-20 00:00:00.000000","2023-02-27 00:00:00.000000","2023-03-06 00:00:00.000000","2023-03-13 00:00:00.000000","2023-03-20 00:00:00.000000","2023-03-27 00:00:00.000000","2023-04-03 00:00:00.000000","2023-04-10 00:00:00.000000","2023-04-17 00:00:00.000000","2023-04-24 00:00:00.000000","2023-05-01 00:00:00.000000","2023-05-08 00:00:00.000000","2023-05-15 00:00:00.000000","2023-05-22 00:00:00.000000","2023-05-29 00:00:00.000000","2023-06-05 00:00:00.000000","2023-06-12 00:00:00.000000","2023-06-19 00:00:00.000000","2023-06-26 00:00:00.000000","2023-07-03 00:00:00.000000","2023-07-10 00:00:00.000000","2023-07-17 00:00:00.000000","2023-07-24 00:00:00.000000","2023-07-31 00:00:00.000000","2023-08-07 00:00:00.000000","2023-08-14 00:00:00.000000","2023-08-21 00:00:00.000000","2023-08-28 00:00:00.000000","2023-09-04 00:00:00.000000","2023-09-11 00:00:00.000000","2023-09-18 00:00:00.000000","2023-09-25 00:00:00.000000","2023-10-02 00:00:00.000000","2023-10-09 00:00:00.000000","2023-10-16 00:00:00.000000","2023-10-23 00:00:00.000000","2023-10-30 00:00:00.000000","2023-11-06 00:00:00.000000","2023-11-13 00:00:00.000000","2023-11-20 00:00:00.000000","2023-11-27 00:00:00.000000","2023-12-04 00:00:00.000000","2023-12-11 00:00:00.000000","2023-12-18 00:00:00.000000","2023-12-25 00:00:00.000000"],"y":[36148.477666666666,34981.163833333339,34002.944833333335,33153.342166666669,32259.140333333333,31444.830666666665,30578.246666666662,29540.293166666659,28351.820499999991,27180.966499999991,26161.361833333322,25181.945166666654,24263.330999999987,23415.21833333332,22842.583333333321,22319.189833333319,21806.634499999989,21245.409333333322,20844.897833333325,20800.32499999999,20640.733666666656,20470.796333333321,20242.000666666652,20059.189499999986,19785.343833333322,19501.771499999988,19183.898333333324,18815.649833333322,18538.394666666652,18509.370499999986,18615.541833333322,18745.628499999988,18881.507166666655,19044.793499999992,19260.774999999991,19471.660833333324,19654.936166666659,19758.624999999993,20047.08116666666,20397.421666666654,20912.039499999992,21495.598833333326,22174.88616666666,22754.479999999992,23338.211666666659,23909.271166666658,24429.444666666655,24943.611166666658,25466.022666666657,25846.575833333325,26049.600999999991,26182.552999999993,26490.274666666657,26902.149499999992,27243.631166666666,27583.786833333335,27943.984166666669,28345.553833333332,28504.633333333339,28584.816166666675,28537.926500000001,28436.627166666673,28269.513166666671,28143.830166666674,28012.23816666667,27911.187833333337,27922.662,27970.745000000003,27962.120500000001,28052.416500000003,28402.769,28853.467500000006,29210.271166666673,29522.618333333336,29858.146833333332,30274.697999999997,30915.507333333331,31534.816999999992,32205.001499999991,32870.23833333332],"type":"scatter","mode":"lines","showlegend":false,"line":{"color":"steelblue","dash":"dot"},"marker":{"color":"rgba(140,86,75,1)","line":{"color":"rgba(140,86,75,1)"}},"error_y":{"color":"rgba(140,86,75,1)"},"error_x":{"color":"rgba(140,86,75,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["2022-02-07 00:00:00.000000","2022-02-14 00:00:00.000000","2022-02-21 00:00:00.000000","2022-03-07 00:00:00.000000","2022-03-28 00:00:00.000000","2022-04-04 00:00:00.000000","2022-04-11 00:00:00.000000","2022-04-18 00:00:00.000000","2022-04-25 00:00:00.000000","2022-05-02 00:00:00.000000","2022-05-09 00:00:00.000000","2022-05-16 00:00:00.000000","2022-05-23 00:00:00.000000","2022-06-06 00:00:00.000000","2022-06-13 00:00:00.000000","2022-06-27 00:00:00.000000","2022-07-11 00:00:00.000000","2022-08-01 00:00:00.000000","2022-08-15 00:00:00.000000","2022-08-22 00:00:00.000000","2022-09-12 00:00:00.000000","2022-09-19 00:00:00.000000","2022-10-10 00:00:00.000000","2022-11-07 00:00:00.000000","2022-11-14 00:00:00.000000","2022-12-05 00:00:00.000000","2022-12-12 00:00:00.000000","2022-12-26 00:00:00.000000","2023-01-30 00:00:00.000000","2023-02-06 00:00:00.000000","2023-02-20 00:00:00.000000","2023-02-27 00:00:00.000000","2023-03-06 00:00:00.000000","2023-03-20 00:00:00.000000","2023-04-17 00:00:00.000000","2023-05-01 00:00:00.000000","2023-05-08 00:00:00.000000","2023-05-15 00:00:00.000000","2023-05-29 00:00:00.000000","2023-06-05 00:00:00.000000","2023-07-03 00:00:00.000000","2023-07-17 00:00:00.000000","2023-07-24 00:00:00.000000","2023-07-31 00:00:00.000000","2023-08-14 00:00:00.000000","2023-08-21 00:00:00.000000","2023-08-28 00:00:00.000000","2023-09-04 00:00:00.000000","2023-09-18 00:00:00.000000","2023-10-02 00:00:00.000000","2023-10-09 00:00:00.000000","2023-12-11 00:00:00.000000","2023-12-25 00:00:00.000000"],"y":[301990.47876999999,243150.46161999999,412335.93267000001,374777.65360999998,312053.15964000003,268118.29110999999,259281.04870000001,283885.03636999999,368444.26814,419979.58289999998,964223.84927400004,375096.22376000002,430508.71990999999,528925.48795900005,1153717.637537,508544.1397,1043685.76303,951140.43388000003,1402957.39876,1343190.8600000001,2218565.5969400001,2285541.4879299998,1666942.47921,3234391.8739319998,1626234.48043,1443791.9751899999,1511897.6262099999,1028681.78419,1949971.72168,1976378.5128200001,2237983.7275299998,1698503.29143,2718623.7285600002,1437828.8470600001,430421.84645999997,360117.97447000002,338765.74242999998,230394.72253,233113.44203999999,347786.76863000001,244056.69119000001,180919.27148,168154.81375,190359.38216000001,307223.55372999999,188618.43325,258183.08812999999,156769.66561,191220.58923000001,217523.39637999999,164897.39085,292562.41577999998,77842.340890000007],"showlegend":false,"marker":{"color":"rgba(255,99,71,1)","line":{"color":"rgb(8,48,107)","width":0.5}},"name":"Volume","type":"bar","textfont":{"color":"rgba(255,99,71,1)"},"error_y":{"color":"rgba(255,99,71,1)"},"error_x":{"color":"rgba(255,99,71,1)"},"xaxis":"x","yaxis":"y2","frame":null},{"x":["2022-02-28 00:00:00.000000","2022-03-14 00:00:00.000000","2022-03-21 00:00:00.000000","2022-05-30 00:00:00.000000","2022-06-20 00:00:00.000000","2022-07-04 00:00:00.000000","2022-07-18 00:00:00.000000","2022-07-25 00:00:00.000000","2022-08-08 00:00:00.000000","2022-08-29 00:00:00.000000","2022-09-05 00:00:00.000000","2022-09-26 00:00:00.000000","2022-10-03 00:00:00.000000","2022-10-17 00:00:00.000000","2022-10-24 00:00:00.000000","2022-10-31 00:00:00.000000","2022-11-21 00:00:00.000000","2022-11-28 00:00:00.000000","2022-12-19 00:00:00.000000","2023-01-02 00:00:00.000000","2023-01-09 00:00:00.000000","2023-01-16 00:00:00.000000","2023-01-23 00:00:00.000000","2023-02-13 00:00:00.000000","2023-03-13 00:00:00.000000","2023-03-27 00:00:00.000000","2023-04-03 00:00:00.000000","2023-04-10 00:00:00.000000","2023-04-24 00:00:00.000000","2023-05-22 00:00:00.000000","2023-06-12 00:00:00.000000","2023-06-19 00:00:00.000000","2023-06-26 00:00:00.000000","2023-07-10 00:00:00.000000","2023-08-07 00:00:00.000000","2023-09-11 00:00:00.000000","2023-09-25 00:00:00.000000","2023-10-16 00:00:00.000000","2023-10-23 00:00:00.000000","2023-10-30 00:00:00.000000","2023-11-06 00:00:00.000000","2023-11-13 00:00:00.000000","2023-11-20 00:00:00.000000","2023-11-27 00:00:00.000000","2023-12-04 00:00:00.000000","2023-12-18 00:00:00.000000"],"y":[376417.07829999999,323399.67099999997,315436.15044,422401.40351999999,570801.23178000003,1111996.98071,1336219.23609,1282264.24492,1251083.26468,1527594.8452900001,2146685.7623299998,2777070.9123800001,1690215.44019,1439566.24878,2026392.42105,2205754.8304499998,1561058.4795830001,1572173.55626,1148035.8147100001,1112349.61417,2145455.7345799999,2108890.0692199999,1946352.7960000001,2497565.4750799998,3775888.9498299998,500795.73087000003,306532.39013999997,377573.74044000002,444613.47700999997,251061.07389,265685.74050999997,408189.22941999999,294881.44198,269249.39030999999,178844.98681,221247.03537,189937.16918999999,294677.81127000001,373306.40873999998,249862.2126,261060.64807,255993.59565,229889.97506999999,222103.26117000001,332080.41362000001,245481.20611999999],"showlegend":false,"marker":{"color":"rgba(152,251,152,1)","line":{"color":"rgb(8,48,107)","width":0.5}},"name":"Volume","type":"bar","textfont":{"color":"rgba(152,251,152,1)"},"error_y":{"color":"rgba(152,251,152,1)"},"error_x":{"color":"rgba(152,251,152,1)"},"xaxis":"x","yaxis":"y2","frame":null},{"showlegend":false,"x":["2023-06-05 00:00:00.000000","2023-06-12 00:00:00.000000","2023-06-19 00:00:00.000000","2023-07-31 00:00:00.000000","2023-08-07 00:00:00.000000","2023-08-14 00:00:00.000000","2023-08-21 00:00:00.000000","2023-08-28 00:00:00.000000","2023-09-04 00:00:00.000000","2023-09-11 00:00:00.000000","2023-09-18 00:00:00.000000","2023-09-25 00:00:00.000000","2023-10-02 00:00:00.000000","2023-10-09 00:00:00.000000","2023-10-16 00:00:00.000000"],"y":[-0.42568179942677009,-0.77568340886006926,-0.027399589536558189,-0.2961722540824363,-0.47804940307961274,-1.3109971290527396,-1.8359810732915545,-2.1457813769142451,-2.2994801447062132,-2.1513664913552968,-2.0406784868546501,-1.4797005738073725,-1.0897546441682402,-0.98470997644018876,-0.22541587284488873],"marker":{"color":"rgba(255,99,71,1)","line":{"color":"rgb(8,48,107)","width":0.5}},"name":"MACD","type":"bar","textfont":{"color":"rgba(255,99,71,1)"},"error_y":{"color":"rgba(255,99,71,1)"},"error_x":{"color":"rgba(255,99,71,1)"},"xaxis":"x","yaxis":"y3","frame":null},{"showlegend":false,"x":["2022-09-26 00:00:00.000000","2022-10-03 00:00:00.000000","2022-10-10 00:00:00.000000","2022-10-17 00:00:00.000000","2022-10-24 00:00:00.000000","2022-10-31 00:00:00.000000","2022-11-07 00:00:00.000000","2022-11-14 00:00:00.000000","2022-11-21 00:00:00.000000","2022-11-28 00:00:00.000000","2022-12-05 00:00:00.000000","2022-12-12 00:00:00.000000","2022-12-19 00:00:00.000000","2022-12-26 00:00:00.000000","2023-01-02 00:00:00.000000","2023-01-09 00:00:00.000000","2023-01-16 00:00:00.000000","2023-01-23 00:00:00.000000","2023-01-30 00:00:00.000000","2023-02-06 00:00:00.000000","2023-02-13 00:00:00.000000","2023-02-20 00:00:00.000000","2023-02-27 00:00:00.000000","2023-03-06 00:00:00.000000","2023-03-13 00:00:00.000000","2023-03-20 00:00:00.000000","2023-03-27 00:00:00.000000","2023-04-03 00:00:00.000000","2023-04-10 00:00:00.000000","2023-04-17 00:00:00.000000","2023-04-24 00:00:00.000000","2023-05-01 00:00:00.000000","2023-05-08 00:00:00.000000","2023-05-15 00:00:00.000000","2023-05-22 00:00:00.000000","2023-05-29 00:00:00.000000","2023-06-26 00:00:00.000000","2023-07-03 00:00:00.000000","2023-07-10 00:00:00.000000","2023-07-17 00:00:00.000000","2023-07-24 00:00:00.000000","2023-10-23 00:00:00.000000","2023-10-30 00:00:00.000000","2023-11-06 00:00:00.000000","2023-11-13 00:00:00.000000","2023-11-20 00:00:00.000000","2023-11-27 00:00:00.000000","2023-12-04 00:00:00.000000","2023-12-11 00:00:00.000000","2023-12-18 00:00:00.000000","2023-12-25 00:00:00.000000"],"y":[0.93099787907580733,1.1652186750104896,1.3599154702197147,1.6612303472934791,2.2421814701063418,2.7444898929560324,1.7001915585438354,1.0436276635220274,0.7345756289848353,0.84414656331159676,0.99725822857321589,1.0611251311155954,1.2115438565784622,1.3039039212382288,1.60646574539801,3.154026077369787,4.7156511184966909,5.8971641873156981,6.1673161195629005,5.7496512378545059,6.0374509162493091,5.7451762580686516,4.9839713749227244,4.1689326149560824,5.2068310488142924,5.5523912358774083,5.5043441556223103,5.1934305221818819,5.186748076937878,4.1820041087330511,3.6950930318071773,2.9493320421424087,1.9167301665083363,1.0811929456655509,0.76458515648342118,0.24640104802364693,0.40958012300214897,0.49240735739519081,0.47406809565870311,0.34508403761291273,0.010666554273214501,1.2569545791471386,2.1592326769946784,2.9740180033961807,3.3030190048161119,3.2712245058757556,3.4789661170862711,4.0143394152723042,3.5697885053853255,3.273398469979659,2.7513571255560691],"marker":{"color":"rgba(152,251,152,1)","line":{"color":"rgb(8,48,107)","width":0.5}},"name":"MACD","type":"bar","textfont":{"color":"rgba(152,251,152,1)"},"error_y":{"color":"rgba(152,251,152,1)"},"error_x":{"color":"rgba(152,251,152,1)"},"xaxis":"x","yaxis":"y3","frame":null},{"x":["2022-09-26 00:00:00.000000","2022-10-03 00:00:00.000000","2022-10-10 00:00:00.000000","2022-10-17 00:00:00.000000","2022-10-24 00:00:00.000000","2022-10-31 00:00:00.000000","2022-11-07 00:00:00.000000","2022-11-14 00:00:00.000000","2022-11-21 00:00:00.000000","2022-11-28 00:00:00.000000","2022-12-05 00:00:00.000000","2022-12-12 00:00:00.000000","2022-12-19 00:00:00.000000","2022-12-26 00:00:00.000000","2023-01-02 00:00:00.000000","2023-01-09 00:00:00.000000","2023-01-16 00:00:00.000000","2023-01-23 00:00:00.000000","2023-01-30 00:00:00.000000","2023-02-06 00:00:00.000000","2023-02-13 00:00:00.000000","2023-02-20 00:00:00.000000","2023-02-27 00:00:00.000000","2023-03-06 00:00:00.000000","2023-03-13 00:00:00.000000","2023-03-20 00:00:00.000000","2023-03-27 00:00:00.000000","2023-04-03 00:00:00.000000","2023-04-10 00:00:00.000000","2023-04-17 00:00:00.000000","2023-04-24 00:00:00.000000","2023-05-01 00:00:00.000000","2023-05-08 00:00:00.000000","2023-05-15 00:00:00.000000","2023-05-22 00:00:00.000000","2023-05-29 00:00:00.000000","2023-06-05 00:00:00.000000","2023-06-12 00:00:00.000000","2023-06-19 00:00:00.000000","2023-06-26 00:00:00.000000","2023-07-03 00:00:00.000000","2023-07-10 00:00:00.000000","2023-07-17 00:00:00.000000","2023-07-24 00:00:00.000000","2023-07-31 00:00:00.000000","2023-08-07 00:00:00.000000","2023-08-14 00:00:00.000000","2023-08-21 00:00:00.000000","2023-08-28 00:00:00.000000","2023-09-04 00:00:00.000000","2023-09-11 00:00:00.000000","2023-09-18 00:00:00.000000","2023-09-25 00:00:00.000000","2023-10-02 00:00:00.000000","2023-10-09 00:00:00.000000","2023-10-16 00:00:00.000000","2023-10-23 00:00:00.000000","2023-10-30 00:00:00.000000","2023-11-06 00:00:00.000000","2023-11-13 00:00:00.000000","2023-11-20 00:00:00.000000","2023-11-27 00:00:00.000000","2023-12-04 00:00:00.000000","2023-12-11 00:00:00.000000","2023-12-18 00:00:00.000000","2023-12-25 00:00:00.000000"],"y":[-21.278080300866247,-20.986775632113627,-20.646796764558701,-20.231489177735334,-19.670943810208751,-18.984821336969745,-18.559773447333789,-18.298866531453282,-18.115222624207071,-17.904185983379172,-17.654871426235871,-17.389590143456971,-17.086704179312356,-16.760728199002799,-16.359111762653299,-15.570605243310853,-14.391692463686681,-12.917401416857757,-11.375572386967033,-9.9381595775034057,-8.4287968484410776,-6.9925027839239151,-5.746509940193234,-4.7042767864542139,-3.4025690242506408,-2.0144712152812891,-0.63838517637571179,0.65997245416975858,1.9566594734042284,3.0021605005874914,3.9259337585392862,4.6632667690748884,5.1424493107019726,5.4127475471183608,5.6038938362392159,5.6654940982451283,5.559073648388436,5.3651527961734189,5.3583028987892796,5.4606979295398173,5.583799768888615,5.7023167928032912,5.7885878022065196,5.7912544407748232,5.7172113772542144,5.5976990264843112,5.2699497442211269,4.8109544758982388,4.2745091316696779,3.6996390954931249,3.161797472654301,2.6516278509406388,2.2817027074887957,2.0092640464467357,1.7630865523366888,1.7067325841254668,2.0209712289122512,2.5607793981609213,3.3042838990099663,4.1300386502139945,4.947844776682933,5.8175863059545012,6.8211711597725779,7.7136182861189102,8.5319679036138254,9.2198071850028427],"type":"scatter","mode":"lines","showlegend":false,"marker":{"color":"rgba(70,130,180,1)","line":{"color":"rgba(70,130,180,1)"}},"textfont":{"color":"rgba(70,130,180,1)"},"error_y":{"color":"rgba(70,130,180,1)"},"error_x":{"color":"rgba(70,130,180,1)"},"line":{"color":"rgba(70,130,180,1)"},"xaxis":"x","yaxis":"y3","frame":null},{"x":["2022-08-01 00:00:00.000000","2022-08-08 00:00:00.000000","2022-08-15 00:00:00.000000","2022-08-22 00:00:00.000000","2022-08-29 00:00:00.000000","2022-09-05 00:00:00.000000","2022-09-12 00:00:00.000000","2022-09-19 00:00:00.000000","2022-09-26 00:00:00.000000","2022-10-03 00:00:00.000000","2022-10-10 00:00:00.000000","2022-10-17 00:00:00.000000","2022-10-24 00:00:00.000000","2022-10-31 00:00:00.000000","2022-11-07 00:00:00.000000","2022-11-14 00:00:00.000000","2022-11-21 00:00:00.000000","2022-11-28 00:00:00.000000","2022-12-05 00:00:00.000000","2022-12-12 00:00:00.000000","2022-12-19 00:00:00.000000","2022-12-26 00:00:00.000000","2023-01-02 00:00:00.000000","2023-01-09 00:00:00.000000","2023-01-16 00:00:00.000000","2023-01-23 00:00:00.000000","2023-01-30 00:00:00.000000","2023-02-06 00:00:00.000000","2023-02-13 00:00:00.000000","2023-02-20 00:00:00.000000","2023-02-27 00:00:00.000000","2023-03-06 00:00:00.000000","2023-03-13 00:00:00.000000","2023-03-20 00:00:00.000000","2023-03-27 00:00:00.000000","2023-04-03 00:00:00.000000","2023-04-10 00:00:00.000000","2023-04-17 00:00:00.000000","2023-04-24 00:00:00.000000","2023-05-01 00:00:00.000000","2023-05-08 00:00:00.000000","2023-05-15 00:00:00.000000","2023-05-22 00:00:00.000000","2023-05-29 00:00:00.000000","2023-06-05 00:00:00.000000","2023-06-12 00:00:00.000000","2023-06-19 00:00:00.000000","2023-06-26 00:00:00.000000","2023-07-03 00:00:00.000000","2023-07-10 00:00:00.000000","2023-07-17 00:00:00.000000","2023-07-24 00:00:00.000000","2023-07-31 00:00:00.000000","2023-08-07 00:00:00.000000","2023-08-14 00:00:00.000000","2023-08-21 00:00:00.000000","2023-08-28 00:00:00.000000","2023-09-04 00:00:00.000000","2023-09-11 00:00:00.000000","2023-09-18 00:00:00.000000","2023-09-25 00:00:00.000000","2023-10-02 00:00:00.000000","2023-10-09 00:00:00.000000","2023-10-16 00:00:00.000000","2023-10-23 00:00:00.000000","2023-10-30 00:00:00.000000","2023-11-06 00:00:00.000000","2023-11-13 00:00:00.000000","2023-11-20 00:00:00.000000","2023-11-27 00:00:00.000000","2023-12-04 00:00:00.000000","2023-12-11 00:00:00.000000","2023-12-18 00:00:00.000000","2023-12-25 00:00:00.000000"],"y":[-22.806724545479728,-21.687671451644796,-21.440727641879363,-21.684083769182628,-21.575998584838306,-20.710899826202013,-20.634128840822676,-20.615405625956285,-20.347082421790439,-19.821556957103137,-19.286881294338986,-18.570258830441855,-17.428762340102409,-16.240331444013712,-16.859581888789954,-17.255238867931254,-17.380646995222236,-17.060039420067575,-16.657613197662656,-16.328465012341375,-15.875160322733894,-15.45682427776457,-14.752646017255289,-12.416579165941066,-9.67604134518999,-7.020237229542059,-5.2082562674041322,-4.1885083396488998,-2.3913459321917685,-1.2473265258552635,-0.76253856527050967,-0.53534417149813107,1.804262024563652,3.5379200205961192,4.8659589792465985,5.8534029763516404,7.1434075503421068,7.1841646093205425,7.6210267903464635,7.6125988112172971,7.0591794772103089,6.4939404927839117,6.3684789927226371,5.9118951462687752,5.1333918489616659,4.5894693873133496,5.3309033092527214,5.8702780525419662,6.0762071262838058,6.1763848884619943,6.1336718398194323,5.8019209950480377,5.4210391231717781,5.1196496234046984,3.9589526151683874,2.9749734026066843,2.1287277547554329,1.4001589507869117,1.0104309812990042,0.61094936408598866,0.80200213368142315,0.91950940227849554,0.7783765758965,1.4813167112805781,3.2779258080593898,4.7200120751555996,6.2783019024061471,7.4330576550301064,8.2190692825586886,9.2965524230407723,10.835510575044882,11.283406791504236,11.805366373593484,11.971164310558912],"type":"scatter","mode":"lines","showlegend":false,"marker":{"color":"rgba(255,165,0,1)","line":{"color":"rgba(255,165,0,1)"}},"textfont":{"color":"rgba(255,165,0,1)"},"error_y":{"color":"rgba(255,165,0,1)"},"error_x":{"color":"rgba(255,165,0,1)"},"line":{"color":"rgba(255,165,0,1)"},"xaxis":"x","yaxis":"y3","frame":null},{"x":["2022-05-16 00:00:00.000000","2022-05-23 00:00:00.000000","2022-05-30 00:00:00.000000","2022-06-06 00:00:00.000000","2022-06-13 00:00:00.000000","2022-06-20 00:00:00.000000","2022-06-27 00:00:00.000000","2022-07-04 00:00:00.000000","2022-07-11 00:00:00.000000","2022-07-18 00:00:00.000000","2022-07-25 00:00:00.000000","2022-08-01 00:00:00.000000","2022-08-08 00:00:00.000000","2022-08-15 00:00:00.000000","2022-08-22 00:00:00.000000","2022-08-29 00:00:00.000000","2022-09-05 00:00:00.000000","2022-09-12 00:00:00.000000","2022-09-19 00:00:00.000000","2022-09-26 00:00:00.000000","2022-10-03 00:00:00.000000","2022-10-10 00:00:00.000000","2022-10-17 00:00:00.000000","2022-10-24 00:00:00.000000","2022-10-31 00:00:00.000000","2022-11-07 00:00:00.000000","2022-11-14 00:00:00.000000","2022-11-21 00:00:00.000000","2022-11-28 00:00:00.000000","2022-12-05 00:00:00.000000","2022-12-12 00:00:00.000000","2022-12-19 00:00:00.000000","2022-12-26 00:00:00.000000","2023-01-02 00:00:00.000000","2023-01-09 00:00:00.000000","2023-01-16 00:00:00.000000","2023-01-23 00:00:00.000000","2023-01-30 00:00:00.000000","2023-02-06 00:00:00.000000","2023-02-13 00:00:00.000000","2023-02-20 00:00:00.000000","2023-02-27 00:00:00.000000","2023-03-06 00:00:00.000000","2023-03-13 00:00:00.000000","2023-03-20 00:00:00.000000","2023-03-27 00:00:00.000000","2023-04-03 00:00:00.000000","2023-04-10 00:00:00.000000","2023-04-17 00:00:00.000000","2023-04-24 00:00:00.000000","2023-05-01 00:00:00.000000","2023-05-08 00:00:00.000000","2023-05-15 00:00:00.000000","2023-05-22 00:00:00.000000","2023-05-29 00:00:00.000000","2023-06-05 00:00:00.000000","2023-06-12 00:00:00.000000","2023-06-19 00:00:00.000000","2023-06-26 00:00:00.000000","2023-07-03 00:00:00.000000","2023-07-10 00:00:00.000000","2023-07-17 00:00:00.000000","2023-07-24 00:00:00.000000","2023-07-31 00:00:00.000000","2023-08-07 00:00:00.000000","2023-08-14 00:00:00.000000","2023-08-21 00:00:00.000000","2023-08-28 00:00:00.000000","2023-09-04 00:00:00.000000","2023-09-11 00:00:00.000000","2023-09-18 00:00:00.000000","2023-09-25 00:00:00.000000","2023-10-02 00:00:00.000000","2023-10-09 00:00:00.000000","2023-10-16 00:00:00.000000","2023-10-23 00:00:00.000000","2023-10-30 00:00:00.000000","2023-11-06 00:00:00.000000","2023-11-13 00:00:00.000000","2023-11-20 00:00:00.000000","2023-11-27 00:00:00.000000","2023-12-04 00:00:00.000000","2023-12-11 00:00:00.000000","2023-12-18 00:00:00.000000","2023-12-25 00:00:00.000000"],"y":[31.216929188692578,30.354538918002984,31.468260530930227,27.905181295010621,22.89632808662417,24.032025326205499,22.695950603205386,26.640324067542931,26.579594792713429,31.254771470565633,33.092697124044903,32.934668559737169,36.061223183612007,32.087235368224903,29.617614409995848,30.916756628717696,36.131612450886202,32.630667557701756,31.792857714146088,32.556866850727367,33.780970869917823,33.479570968970258,34.577324196766078,38.345039884917618,39.334883694429912,30.623337317124182,30.544336944870185,31.117248636068297,33.797074518682479,33.753933750018604,32.992181737179365,33.430195339442207,32.899030458860828,35.517461214358555,50.694873508935729,56.14743177490255,58.904345510871067,55.940859457647356,51.944352305400869,58.805601984605808,56.310937790943541,52.545213333026808,51.127109511691373,65.11548133073876,65.099296282022834,65.489921382851023,65.797145555457007,69.598359506670022,59.793214277307598,63.17466480414538,60.495780125104062,55.705017249014482,55.176608957106943,58.46716931266932,55.31395270222513,51.562852844535989,52.764548612554393,62.683062893050241,62.996383981402943,61.356417716744275,61.524910692344704,60.929910155664565,57.677369679130678,56.892291763542111,57.587410052808906,46.032539917818518,45.752444583642877,45.313012619309731,44.85249789712595,47.871978920945807,46.750167074116753,54.003467912615136,53.662634390315134,50.214827410743524,60.40699051696447,70.71831024180338,71.573006441009156,74.904229990367625,75.352455235341324,75.492043062175085,79.15719169821655,83.238508367484428,73.441138633303467,75.518824707123244,74.477476915811351],"showlegend":false,"mode":"lines","name":"RSI","type":"scatter","marker":{"color":"rgba(70,130,180,1)","line":{"color":"rgba(70,130,180,1)"}},"textfont":{"color":"rgba(70,130,180,1)"},"error_y":{"color":"rgba(70,130,180,1)"},"error_x":{"color":"rgba(70,130,180,1)"},"line":{"color":"rgba(70,130,180,1)"},"xaxis":"x","yaxis":"y4","frame":null},{"fillcolor":"rgba(70,130,180,0.1)","x":["2022-05-16 00:00:00.000000","2022-05-23 00:00:00.000000","2022-05-30 00:00:00.000000","2022-06-06 00:00:00.000000","2022-06-13 00:00:00.000000","2022-06-20 00:00:00.000000","2022-06-27 00:00:00.000000","2022-07-04 00:00:00.000000","2022-07-11 00:00:00.000000","2022-07-18 00:00:00.000000","2022-07-25 00:00:00.000000","2022-08-01 00:00:00.000000","2022-08-08 00:00:00.000000","2022-08-15 00:00:00.000000","2022-08-22 00:00:00.000000","2022-08-29 00:00:00.000000","2022-09-05 00:00:00.000000","2022-09-12 00:00:00.000000","2022-09-19 00:00:00.000000","2022-09-26 00:00:00.000000","2022-10-03 00:00:00.000000","2022-10-10 00:00:00.000000","2022-10-17 00:00:00.000000","2022-10-24 00:00:00.000000","2022-10-31 00:00:00.000000","2022-11-07 00:00:00.000000","2022-11-14 00:00:00.000000","2022-11-21 00:00:00.000000","2022-11-28 00:00:00.000000","2022-12-05 00:00:00.000000","2022-12-12 00:00:00.000000","2022-12-19 00:00:00.000000","2022-12-26 00:00:00.000000","2023-01-02 00:00:00.000000","2023-01-09 00:00:00.000000","2023-01-16 00:00:00.000000","2023-01-23 00:00:00.000000","2023-01-30 00:00:00.000000","2023-02-06 00:00:00.000000","2023-02-13 00:00:00.000000","2023-02-20 00:00:00.000000","2023-02-27 00:00:00.000000","2023-03-06 00:00:00.000000","2023-03-13 00:00:00.000000","2023-03-20 00:00:00.000000","2023-03-27 00:00:00.000000","2023-04-03 00:00:00.000000","2023-04-10 00:00:00.000000","2023-04-17 00:00:00.000000","2023-04-24 00:00:00.000000","2023-05-01 00:00:00.000000","2023-05-08 00:00:00.000000","2023-05-15 00:00:00.000000","2023-05-22 00:00:00.000000","2023-05-29 00:00:00.000000","2023-06-05 00:00:00.000000","2023-06-12 00:00:00.000000","2023-06-19 00:00:00.000000","2023-06-26 00:00:00.000000","2023-07-03 00:00:00.000000","2023-07-10 00:00:00.000000","2023-07-17 00:00:00.000000","2023-07-24 00:00:00.000000","2023-07-31 00:00:00.000000","2023-08-07 00:00:00.000000","2023-08-14 00:00:00.000000","2023-08-21 00:00:00.000000","2023-08-28 00:00:00.000000","2023-09-04 00:00:00.000000","2023-09-11 00:00:00.000000","2023-09-18 00:00:00.000000","2023-09-25 00:00:00.000000","2023-10-02 00:00:00.000000","2023-10-09 00:00:00.000000","2023-10-16 00:00:00.000000","2023-10-23 00:00:00.000000","2023-10-30 00:00:00.000000","2023-11-06 00:00:00.000000","2023-11-13 00:00:00.000000","2023-11-20 00:00:00.000000","2023-11-27 00:00:00.000000","2023-12-04 00:00:00.000000","2023-12-11 00:00:00.000000","2023-12-18 00:00:00.000000","2023-12-25 00:00:00.000000","2023-12-25 00:00:00.000000","2023-12-25 00:00:00.000000","2023-12-18 00:00:00.000000","2023-12-11 00:00:00.000000","2023-12-04 00:00:00.000000","2023-11-27 00:00:00.000000","2023-11-20 00:00:00.000000","2023-11-13 00:00:00.000000","2023-11-06 00:00:00.000000","2023-10-30 00:00:00.000000","2023-10-23 00:00:00.000000","2023-10-16 00:00:00.000000","2023-10-09 00:00:00.000000","2023-10-02 00:00:00.000000","2023-09-25 00:00:00.000000","2023-09-18 00:00:00.000000","2023-09-11 00:00:00.000000","2023-09-04 00:00:00.000000","2023-08-28 00:00:00.000000","2023-08-21 00:00:00.000000","2023-08-14 00:00:00.000000","2023-08-07 00:00:00.000000","2023-07-31 00:00:00.000000","2023-07-24 00:00:00.000000","2023-07-17 00:00:00.000000","2023-07-10 00:00:00.000000","2023-07-03 00:00:00.000000","2023-06-26 00:00:00.000000","2023-06-19 00:00:00.000000","2023-06-12 00:00:00.000000","2023-06-05 00:00:00.000000","2023-05-29 00:00:00.000000","2023-05-22 00:00:00.000000","2023-05-15 00:00:00.000000","2023-05-08 00:00:00.000000","2023-05-01 00:00:00.000000","2023-04-24 00:00:00.000000","2023-04-17 00:00:00.000000","2023-04-10 00:00:00.000000","2023-04-03 00:00:00.000000","2023-03-27 00:00:00.000000","2023-03-20 00:00:00.000000","2023-03-13 00:00:00.000000","2023-03-06 00:00:00.000000","2023-02-27 00:00:00.000000","2023-02-20 00:00:00.000000","2023-02-13 00:00:00.000000","2023-02-06 00:00:00.000000","2023-01-30 00:00:00.000000","2023-01-23 00:00:00.000000","2023-01-16 00:00:00.000000","2023-01-09 00:00:00.000000","2023-01-02 00:00:00.000000","2022-12-26 00:00:00.000000","2022-12-19 00:00:00.000000","2022-12-12 00:00:00.000000","2022-12-05 00:00:00.000000","2022-11-28 00:00:00.000000","2022-11-21 00:00:00.000000","2022-11-14 00:00:00.000000","2022-11-07 00:00:00.000000","2022-10-31 00:00:00.000000","2022-10-24 00:00:00.000000","2022-10-17 00:00:00.000000","2022-10-10 00:00:00.000000","2022-10-03 00:00:00.000000","2022-09-26 00:00:00.000000","2022-09-19 00:00:00.000000","2022-09-12 00:00:00.000000","2022-09-05 00:00:00.000000","2022-08-29 00:00:00.000000","2022-08-22 00:00:00.000000","2022-08-15 00:00:00.000000","2022-08-08 00:00:00.000000","2022-08-01 00:00:00.000000","2022-07-25 00:00:00.000000","2022-07-18 00:00:00.000000","2022-07-11 00:00:00.000000","2022-07-04 00:00:00.000000","2022-06-27 00:00:00.000000","2022-06-20 00:00:00.000000","2022-06-13 00:00:00.000000","2022-06-06 00:00:00.000000","2022-05-30 00:00:00.000000","2022-05-23 00:00:00.000000","2022-05-16 00:00:00.000000"],"y":[20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,20,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80,80],"showlegend":false,"mode":"lines","name":"RSI","type":"scatter","hoveron":"points","fill":"toself","line":{"color":"rgba(70,130,180,1)","dash":"dot"},"marker":{"color":"rgba(70,130,180,0.1)","line":{"color":"rgba(70,130,180,1)"}},"textfont":{"color":"rgba(70,130,180,0.1)"},"error_y":{"color":"rgba(70,130,180,0.1)"},"error_x":{"color":"rgba(70,130,180,0.1)"},"xaxis":"x","yaxis":"y4","frame":null}],"layout":{"xaxis":{"domain":[0,1],"automargin":true,"title":"Index","anchor":"y4","rangeslider":{"visible":true}},"yaxis4":{"domain":[0,0.1133333333333333],"automargin":true,"title":"RSI","anchor":"x"},"yaxis3":{"domain":[0.15333333333333329,0.24666666666666673],"automargin":true,"title":"MACD","anchor":"x"},"yaxis2":{"domain":[0.28666666666666674,0.38],"automargin":true,"title":"Volume","anchor":"x"},"yaxis":{"domain":[0.42000000000000004,1],"automargin":true,"title":"Price","anchor":"x"},"annotations":[{"text":"Placeholder","x":0,"y":0.24666666666666673,"xref":"paper","yref":"paper","showarrow":false,"font":{"size":12}},{"text":"<b>Ticker:<\/b> BTCUSDT <b>Interval:<\/b> 1w (Spot) <b>Exchange:<\/b> binance","x":0,"y":1.05,"xref":"paper","yref":"paper","showarrow":false,"font":{"size":18}}],"shapes":[],"images":[],"margin":{"b":110,"l":60,"t":60,"r":60},"hovermode":"closest","showlegend":true,"legend":{"orientation":"h","x":0,"y":1.1000000000000001},"paper_bgcolor":"rgba(0,0,0,0)","plot_bgcolor":"rgba(0,0,0,0)"},"attrs":{"7f3420685b3":{"showlegend":false,"yaxis":"y","x":{},"open":{},"close":{},"high":{},"low":{},"increasing":{"line":{"color":"palegreen"}},"decreasing":{"line":{"color":"tomato"}},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"candlestick"},"7f344db93b":{"x":{},"y":{},"type":"scatter","mode":"lines","name":"SMA(n=7)","inherit":false},"7f3451644d7c":{"x":{},"y":{},"type":"scatter","mode":"lines","name":"SMA(n=14)","inherit":false},"7f341e30550b":{"x":{},"y":{},"type":"scatter","mode":"lines","showlegend":false,"line":{"color":"steelblue"},"inherit":false},"7f34dc133a":{"x":{},"y":{},"type":"scatter","mode":"lines","showlegend":false,"fill":"tonexty","fillcolor":"rgba(168, 216, 234, 0.1)","line":{"color":"steelblue"},"inherit":false},"7f345daf109f":{"x":{},"y":{},"type":"scatter","mode":"lines","showlegend":false,"line":{"dash":"dot","color":"steelblue"},"inherit":false},"7f34b5b3b37":{"x":{},"y":{},"showlegend":false,"marker":{"line":{"color":"rgb(8,48,107)","width":0.5}},"name":"Volume","color":{},"colors":["tomato","palegreen"],"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"},"7f34180f2b70":{"showlegend":false,"x":{},"y":{},"marker":{"line":{"color":"rgb(8,48,107)","width":0.5}},"name":"MACD","color":{},"colors":["tomato","palegreen"],"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"},"7f3414ed4b89":{"x":{},"y":{},"type":"scatter","mode":"lines","showlegend":false,"color":["steelblue"],"inherit":false},"7f3474aa5fdb":{"x":{},"y":{},"type":"scatter","mode":"lines","showlegend":false,"color":["orange"],"inherit":false},"7f3442406814":{"x":{},"y":{},"showlegend":false,"mode":"lines","name":"RSI","color":["steelblue"],"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"scatter"},"7f3442406814.1":{"x":{},"y":{},"showlegend":false,"mode":"lines","name":"RSI","color":["steelblue"],"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"scatter","ymin":20,"ymax":80,"hoveron":"points","fill":"toself","alpha":0.10000000000000001,"line":{"dash":"dot"},"inherit":true}},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.20000000000000001,"selected":{"opacity":1},"debounce":0},"subplot":true,"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled" title="Installing the package">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-2-contents" aria-controls="callout-2" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Installing the package
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-2" class="callout-2-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<section id="cran-version" class="level4">
+<h4 data-anchor-id="cran-version">CRAN Version</h4>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># install from CRAN</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">pkgs =</span> <span class="st">'cryptoQuotes'</span>,</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">dependencies =</span> <span class="cn">TRUE</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="development-version" class="level4">
+<h4 data-anchor-id="development-version">Development Version</h4>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># install from github</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>devtools<span class="sc">::</span><span class="fu">install_github</span>(</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">repo =</span> <span class="st">'https://github.com/serkor1/cryptoQuotes/'</span>,</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">ref =</span> <span class="st">'main'</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+</div>
+</div>
+</div>
+
+
+
+</section>
+
+<a onclick="window.scrollTo(0, 0); return false;" role="button" id="quarto-back-to-top"><i class="bi bi-arrow-up"></i> Back to top</a></main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const disableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'prefetch';
+    }
+  }
+  const enableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'stylesheet';
+    }
+  }
+  const manageTransitions = (selector, allowTransitions) => {
+    const els = window.document.querySelectorAll(selector);
+    for (let i=0; i < els.length; i++) {
+      const el = els[i];
+      if (allowTransitions) {
+        el.classList.remove('notransition');
+      } else {
+        el.classList.add('notransition');
+      }
+    }
+  }
+  const toggleColorMode = (alternate) => {
+    // Switch the stylesheets
+    const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+    manageTransitions('#quarto-margin-sidebar .nav-link', false);
+    if (alternate) {
+      enableStylesheet(alternateStylesheets);
+      for (const sheetNode of alternateStylesheets) {
+        if (sheetNode.id === "quarto-bootstrap") {
+          toggleBodyColorMode(sheetNode);
+        }
+      }
+    } else {
+      disableStylesheet(alternateStylesheets);
+      toggleBodyColorPrimary();
+    }
+    manageTransitions('#quarto-margin-sidebar .nav-link', true);
+    // Switch the toggles
+    const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+    for (let i=0; i < toggles.length; i++) {
+      const toggle = toggles[i];
+      if (toggle) {
+        if (alternate) {
+          toggle.classList.add("alternate");     
+        } else {
+          toggle.classList.remove("alternate");
+        }
+      }
+    }
+    // Hack to workaround the fact that safari doesn't
+    // properly recolor the scrollbar when toggling (#1455)
+    if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+      manageTransitions("body", false);
+      window.scrollTo(0, 1);
+      setTimeout(() => {
+        window.scrollTo(0, 0);
+        manageTransitions("body", true);
+      }, 40);  
+    }
+  }
+  const isFileUrl = () => { 
+    return window.location.protocol === 'file:';
+  }
+  const hasAlternateSentinel = () => {  
+    let styleSentinel = getColorSchemeSentinel();
+    if (styleSentinel !== null) {
+      return styleSentinel === "alternate";
+    } else {
+      return false;
+    }
+  }
+  const setStyleSentinel = (alternate) => {
+    const value = alternate ? "alternate" : "default";
+    if (!isFileUrl()) {
+      window.localStorage.setItem("quarto-color-scheme", value);
+    } else {
+      localAlternateSentinel = value;
+    }
+  }
+  const getColorSchemeSentinel = () => {
+    if (!isFileUrl()) {
+      const storageValue = window.localStorage.getItem("quarto-color-scheme");
+      return storageValue != null ? storageValue : localAlternateSentinel;
+    } else {
+      return localAlternateSentinel;
+    }
+  }
+  let localAlternateSentinel = 'default';
+  // Dark / light mode switch
+  window.quartoToggleColorScheme = () => {
+    // Read the current dark / light value 
+    let toAlternate = !hasAlternateSentinel();
+    toggleColorMode(toAlternate);
+    setStyleSentinel(toAlternate);
+  };
+  // Ensure there is a toggle, if there isn't float one in the top right
+  if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+    const a = window.document.createElement('a');
+    a.classList.add('top-right');
+    a.classList.add('quarto-color-scheme-toggle');
+    a.href = "";
+    a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+    const i = window.document.createElement("i");
+    i.classList.add('bi');
+    a.appendChild(i);
+    window.document.body.appendChild(a);
+  }
+  // Switch to dark mode if need be
+  if (hasAlternateSentinel()) {
+    toggleColorMode(true);
+  } else {
+    toggleColorMode(false);
+  }
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">Copyright 2024, Serkan Korkmaz</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    </div>
+    <div class="nav-footer-right">
+      <ul class="footer-items list-unstyled">
+    <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/serkor1/serkor1.github.io">
+      <i class="bi bi-github" role="img">
+</i> 
+    </a>
+  </li>  
+</ul>
+    </div>
+  </div>
+</footer>
+
+
+
+</body></html>

@@ -1,0 +1,72 @@
+project:
+  type: website
+
+website:
+  title: "A(nother) Quarto Blog"
+  description: "A description"
+  site-url: https://serkor1.github.io
+  favicon: images/main.png
+  # sidebar
+  # sidebar:
+  #   border: true
+  #   style: "docked"
+  #   type: "dark"
+  #   background: secondary
+  #   search: true
+  #   contents:
+  #       - text: "Home"
+  #         file: index.qmd
+  #       - section: "Packages"
+  #         contents:
+  #           - crypto.qmd
+
+  # page setup:
+  back-to-top-navigation: true
+
+
+  twitter-card: true
+  open-graph: true
+  # cookie-consent:
+  #   type: express
+  #   style: simple
+  # google-analytics:
+  #   tracking-id: "G-XXXXXXX"
+  #   anonymize-ip: true
+
+
+  # search bar
+  # this searches
+  # the entire blog
+  search:
+    location: navbar
+    type: textbox
+
+  navbar:
+    background: primary
+    right:
+      - icon: book
+        text: "R-Bloggers"
+        href: https://www.r-bloggers.com/
+        target: _blank
+      - about.qmd
+    left:
+        - icon: code-slash
+          text: "Cryptocurrency with R"
+          menu:
+          - text: "cryptoQuotes"
+            file: cryptoQuotes.qmd
+  page-footer:
+    background: primary
+    left: "Copyright 2024, Serkan Korkmaz"
+    border: true
+    right:
+      - icon: github
+        href: https://github.com/serkor1/serkor1.github.io
+
+format:
+  html:
+    theme:
+      light: flatly
+      dark: darkly
+    css: styles.css
+

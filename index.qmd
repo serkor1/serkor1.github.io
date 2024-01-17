@@ -1,0 +1,23 @@
+---
+title: "Cryptocurrency with R"
+subtitle: "Blogposts"
+listing:
+  page-size: 5
+  contents: posts
+  sort: "date desc"
+  type: default
+  categories: true
+  sort-ui: true
+  filter-ui: true
+  feed: true
+page-layout: full
+title-block-banner: false
+---
+
+
+::: {.callout-tip title="Part of the R-Bloggers Community"}
+Follow <a href="https://www.r-bloggers.com/" target="_blank">R Bloggers</a> for more `R`-related content!
+:::
+
+---------
+

@@ -1,0 +1,142 @@
+---
+title: "Getting Cryptocurrency OHLC-V Market Data in R"
+subtitle: "The cryptoQuotes package"
+image: images/cryptoQuotes.png
+about:
+  id: hero-heading
+  template: solana
+  links:
+    - icon: github
+      text: Source Code
+      href: https://github.com/serkor1/cryptoQuotes
+    - icon: book
+      text: Documentation
+      href: https://serkor1.github.io/cryptoQuotes/
+format: 
+  html: 
+    page-layout: full
+freeze: true  
+---
+
+
+:::{#hero-heading}
+
+A high-level API client for easy access to cryptocurrency market data, including detailed OHLC-V (Open, High, Low, Close, Volume) candles and sentiment indicators. Offers flexible data granularity (seconds to months) from major exchanges, ensuring reliable and stable market information without low-level API calls. 
+
+:::
+
+----------
+
+```{r}
+#| label: load-packages
+#| echo: true
+#| include: true
+#| message: false
+# load library
+library(cryptoQuotes)
+```
+
+## Loading Bitcoin (BTC) market data in R
+
+::: {.callout-tip collapse="true" title="Supported Exchanges"}
+```{r}
+#| echo: true
+#| include: true
+#| message: true
+# load library
+availableExchanges()
+```
+:::
+
+
+```{r}
+#| label: loading data
+#| echo: true
+#| include: true
+#| message: false
+#| output: false
+## Load hourly BTCUSDT
+## from Binance spot
+tail(
+  BTCUSDT <- getQuote(
+    ticker   = "BTCUSDT",
+    source   = "binance",
+    futures  = FALSE,
+    interval = "1h" 
+  )
+)
+```
+
+
+```{r}
+#| echo: false
+#| include: true
+#| message: false
+kableExtra::add_footnote(
+  label = 'Created with kable and kableExtra',
+  kableExtra::kable_styling(
+  knitr::kable(
+    caption = 'Bitcoin (BTC) OHLC-V Data',
+    align = 'lcccc',
+    table.attr = "style='width:100%;'",
+    x = data.frame(
+      cbind(
+        Index = paste(tail(zoo::index(BTCUSDT))),
+        tail(zoo::coredata(BTCUSDT))
+      ),row.names = NULL
+    ),
+    format = 'html'
+  ),
+  full_width = TRUE,
+  position = 'center'
+)
+)
+
+```
+
+
+
+
+```{r}
+#| label: plot
+#| echo: true
+#| include: true
+#| message: false
+#| fig-height: 10
+cryptoQuotes::chart(
+  chart = cryptoQuotes::kline(
+    cryptoQuotes::BTCUSDT
+  ) %>%  cryptoQuotes::addVolume() %>%  cryptoQuotes::addMA(
+    FUN = TTR::SMA,
+    n = 7
+  ) %>%  cryptoQuotes::addMA(
+    FUN = TTR::SMA,
+    n = 14
+  ) %>%
+     cryptoQuotes::addBBands() %>%
+     cryptoQuotes::addMACD() %>%
+     cryptoQuotes::addRSI()
+
+)
+
+```
+
+
+::: {.callout-tip collapse="true" title="Installing the package"}
+#### CRAN Version
+```{r, eval = FALSE}
+# install from CRAN
+install.packages(
+  pkgs = 'cryptoQuotes',
+  dependencies = TRUE
+)
+```
+#### Development Version
+```{r, eval = FALSE}
+# install from github
+devtools::install_github(
+  repo = 'https://github.com/serkor1/cryptoQuotes/',
+  ref = 'main'
+)
+```
+:::

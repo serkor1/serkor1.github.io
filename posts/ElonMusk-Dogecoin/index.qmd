@@ -1,0 +1,113 @@
+---
+title: "What happens when Elon Musk Tweets about Dogecoin?"
+author: "Serkan Korkmaz"
+date: "2024-01-11"
+categories: [R, code, analysis]
+image: "elon-musk-dogecoin.jpg"
+---
+
+Dogecoin; an all-time Elon Musk favorite. But what happens when he tweets (well now he X'es, I guess) about it?
+
+Here is a case-study of his famous tweet and how the markets reacted in the seconds up to, and after the tweet.
+
+## The famous tweet
+<center>
+<blockquote class="twitter-tweet"><p lang="en" dir="ltr">One word: Doge</p>&mdash; Elon Musk (@elonmusk) <a href="https://twitter.com/elonmusk/status/1340590280848908288?ref_src=twsrc%5Etfw">December 20, 2020</a></blockquote> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+</center>
+
+## Analyzing the Dogecoin price action
+
+::: {.callout-note collapse="true" title="Time conversion"}
+The `getQuote()`-function assumes times are passed as `UTC`, and this blogpost is written from `CET`
+```{r}
+#| echo: true
+#| include: true
+#| message: true
+# load library
+as.POSIXct(
+  as.POSIXct("2020-12-20 9:30:00", tz = 'UTC'),
+  tz = "CET"
+)
+```
+:::
+
+To analyze the price action around the tweet, we will look at the 1 second and 5 minute chart. 
+
+### Analyzing price action on the 1 second chart
+
+```{r}
+## getting Dogecoin
+## on the 1 second chart
+## from Binance around the
+## time Elon Musk tweeted
+DOGEUSDT <- cryptoQuotes::getQuote(
+  ticker   = "DOGEUSDT",
+  source   = "binance",
+  futures  = FALSE,
+  interval = "1s",
+  from     = "2020-12-20 9:29:00",
+  to       = "2020-12-20 9:32:00"
+)
+```
+
+```{r}
+#| label: 1s chart
+#| echo: true
+#| include: true
+#| message: false
+#| fig-height: 10
+
+## chart the price action
+## using klines
+cryptoQuotes::chart(
+  chart = cryptoQuotes::kline(
+    DOGEUSDT
+  )
+)
+```
+
+
+At its lowest around the time of tweet Dogecoin were priced at `r min(DOGEUSDT$Low)`\$, and at its highest it were priced at `r max(DOGEUSDT$Low)`\$ - that is an `r round((max(DOGEUSDT$Low)/min(DOGEUSDT$Low) - 1) * 100)`\% increase!
+
+
+
+### Analyzing price action on the 5 minute chart
+
+```{r}
+## getting Dogecoin
+## on the 5 minute chart
+## from Binance around the
+## time Elon Musk tweeted
+DOGEUSDT <- cryptoQuotes::getQuote(
+  ticker   = "DOGEUSDT",
+  source   = "binance",
+  futures  = FALSE,
+  interval = "5m",
+  from     = "2020-12-20 9:25:00",
+  to       = "2020-12-20 10:00:00"
+)
+```
+
+```{r}
+#| label: 5m chart
+#| echo: true
+#| include: true
+#| message: false
+#| fig-height: 10
+
+## chart the price action
+## using klines
+cryptoQuotes::chart(
+  chart = cryptoQuotes::kline(
+    DOGEUSDT
+  )
+)
+```
+
+
+At its lowest around the time of tweet Dogecoin were priced at `r min(DOGEUSDT$Low)`\$, and at its highest it were priced at `r max(DOGEUSDT$Low)`\$ - that is an `r round((max(DOGEUSDT$Low)/min(DOGEUSDT$Low) - 1) * 100)`\% increase!
+
+## The power of tweets, or Elon Musk
+
+An increase of 7\% over the course 3 minutes and 15\% within 35 minutes is, albeit not uncommon in the cryptocurrency markets, scary - especially if you are a Bear!
+

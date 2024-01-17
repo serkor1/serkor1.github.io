@@ -1,0 +1,20 @@
+---
+title: "About"
+image: man/figures/logo.png
+about:
+  template: jolla
+  links:
+    - icon: linkedin
+      text: LinkedIn
+      href: https://linkedin.com/serkor1
+    - icon: github
+      text: Github
+      href: https://github.com/serkor1
+sidebar: false
+---
+
+This blog is partly dedicated to the development of `cryptoQuotes`, and partly dedicated to all the crypotcurrency related R packages.
+
+::: {.callout-important title="Calling R package developers"}
+If you are a R package developer with interest in cryptocurrency market data, please reach out!
+:::

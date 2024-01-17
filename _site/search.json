@@ -1,0 +1,233 @@
+[
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Cryptocurrency with R",
+    "section": "",
+    "text": "Part of the R-Bloggers Community\n\n\n\nFollow R Bloggers for more R-related content!\n\n\n\n\n\n\n\n\n\n   \n     \n     \n       Order By\n       Default\n         \n          Title\n        \n         \n          Date - Oldest\n        \n         \n          Date - Newest\n        \n         \n          Author\n        \n     \n  \n    \n      \n      \n    \n\n\n\n\n  \n\n\n\n\nWhat happens when Elon Musk Tweets about Dogecoin?\n\n\n\n\n\n\n\nR\n\n\ncode\n\n\nanalysis\n\n\n\n\n\n\n\n\n\n\n\nJan 11, 2024\n\n\nSerkan Korkmaz\n\n\n\n\n\n\nNo matching items\n\n Back to top"
+  },
+  {
+    "objectID": "posts/post-with-code/index.html",
+    "href": "posts/post-with-code/index.html",
+    "title": "Post With Code",
+    "section": "",
+    "text": "This is a post with executable code. ## first\n1 + 1\n\n[1] 2"
+  },
+  {
+    "objectID": "about.html",
+    "href": "about.html",
+    "title": "About",
+    "section": "",
+    "text": "This blog is partly dedicated to the development of cryptoQuotes, and partly dedicated to all the crypotcurrency related R packages.\n\n\n\n\n\n\nCalling R package developers\n\n\n\nIf you are a R package developer with interest in cryptocurrency market data, please reach out!\n\n\n\n\n Back to top"
+  },
+  {
+    "objectID": "posts/welcome/index.html",
+    "href": "posts/welcome/index.html",
+    "title": "R Packages Dedicated to Cryptocurrency Market Data",
+    "section": "",
+    "text": "This is the first post in a Quarto blog. Welcome!\n\nSince this post doesn’t specify an explicit image, the first image in the post will be used in the listing page of posts.\n\n\n\n Back to top"
+  },
+  {
+    "objectID": "cryptcurrency.html",
+    "href": "cryptcurrency.html",
+    "title": "About",
+    "section": "",
+    "text": "This blog is partly dedicated to the development of cryptoQuotes, and partly dedicated to all the crypotcurrency related R packages.\n\n\n\n\n\n\nCalling all R developpers\n\n\n\nIf you are"
+  },
+  {
+    "objectID": "crypto.html",
+    "href": "crypto.html",
+    "title": "Getting Cryptocurrency OHLC-V Market Data in R",
+    "section": "",
+    "text": "Source Code\n  \n  \n    \n     Documentation\n  \n\n      \nA high-level API client for easy access to cryptocurrency market data, including detailed OHLC-V (Open, High, Low, Close, Volume) candles and sentiment indicators. Offers flexible data granularity (seconds to months) from major exchanges, ensuring reliable and stable market information without low-level API calls.\n# load library\nlibrary(cryptoQuotes)"
+  },
+  {
+    "objectID": "crypto.html#education",
+    "href": "crypto.html#education",
+    "title": "Getting OHLC-V Market Data",
+    "section": "Education",
+    "text": "Education\nUniversity of California, San Diego | San Diego, CA PhD in Mathematics | Sept 2011 - June 2015\nMacalester College | St. Paul MA B.A in Economics | Sept 2007 - June 2011"
+  },
+  {
+    "objectID": "crypto.html#experience",
+    "href": "crypto.html#experience",
+    "title": "Getting OHLC-V Market Data",
+    "section": "Experience",
+    "text": "Experience\nWengo Analytics | Head Data Scientist | April 2018 - present\nGeoScynce | Chief Analyst | Sept 2012 - April 2018"
+  },
+  {
+    "objectID": "crypto.html#load-library",
+    "href": "crypto.html#load-library",
+    "title": "Getting OHLC-V Market Data",
+    "section": "Load Library",
+    "text": "Load Library\n\n# load library\nlibrary(cryptoQuotes)"
+  },
+  {
+    "objectID": "crypto.html#installation",
+    "href": "crypto.html#installation",
+    "title": "Getting OHLC-V Market Data",
+    "section": "Installation",
+    "text": "Installation\n\nCRAN Version\n\n# install from CRAN\ninstall.packages(\n  pkgs = 'cryptoQuotes',\n  dependencies = TRUE\n)\n\n\n\nDevelopment Version\n\n# install from github\ndevtools::install_github(\n  repo = 'https://github.com/serkor1/cryptoQuotes/',\n  ref = 'main'\n)"
+  },
+  {
+    "objectID": "crypto.html#loading-bitcoin-btc-market-data-in-r",
+    "href": "crypto.html#loading-bitcoin-btc-market-data-in-r",
+    "title": "Getting Cryptocurrency OHLC-V Market Data in R",
+    "section": "Loading Bitcoin (BTC) market data in R",
+    "text": "Loading Bitcoin (BTC) market data in R\n\n\n\n\n\n\nSupported Exchanges\n\n\n\n\n\n\n# load library\navailableExchanges()\n\nℹ Available exchanges\n✔ binance, kucoin, kraken, bitmart\n\n\n\n\n\n\n## Load hourly BTCUSDT\n## from Binance spot\ntail(\n  BTCUSDT &lt;- getQuote(\n    ticker   = \"BTCUSDT\",\n    source   = \"binance\",\n    futures  = FALSE,\n    interval = \"1h\" \n  )\n)\n\n\n\n\nBitcoin (BTC) OHLC-V Data\n\n\nIndex\nOpen\nHigh\nLow\nClose\nVolume\n\n\n\n\n2024-01-12 11:00:00\n46063.62\n46267\n45941.61\n45954.35\n1976.90053\n\n\n2024-01-12 12:00:00\n45954.35\n46109\n45667.47\n45866.56\n1852.17109\n\n\n2024-01-12 13:00:00\n45866.57\n45944.12\n45573.44\n45779.02\n2155.66091\n\n\n2024-01-12 14:00:00\n45779.02\n45904.66\n45250.01\n45442.02\n5702.97549\n\n\n2024-01-12 15:00:00\n45442.01\n45459.28\n44333.44\n44462.01\n9485.40906\n\n\n2024-01-12 16:00:00\n44462\n44675.88\n43814.02\n44179.15\n6106.18026\n\n\n\na Created with kable and kableExtra\n\n\n\n\n\n\n\n\n\n\n\n\n\n\ncryptoQuotes::chart(\n  chart = cryptoQuotes::kline(\n    cryptoQuotes::BTCUSDT\n  ) %&gt;%  cryptoQuotes::addVolume() %&gt;%  cryptoQuotes::addMA(\n    FUN = TTR::SMA,\n    n = 7\n  ) %&gt;%  cryptoQuotes::addMA(\n    FUN = TTR::SMA,\n    n = 14\n  ) %&gt;%\n     cryptoQuotes::addBBands() %&gt;%\n     cryptoQuotes::addMACD() %&gt;%\n     cryptoQuotes::addRSI()\n\n)\n\n\n\n\n\n\n\n\n\n\n\nInstalling the package\n\n\n\n\n\n\nCRAN Version\n\n# install from CRAN\ninstall.packages(\n  pkgs = 'cryptoQuotes',\n  dependencies = TRUE\n)\n\n\n\nDevelopment Version\n\n# install from github\ndevtools::install_github(\n  repo = 'https://github.com/serkor1/cryptoQuotes/',\n  ref = 'main'\n)"
+  },
+  {
+    "objectID": "index.html#loading-bitcoin-btc-market-data-in-r",
+    "href": "index.html#loading-bitcoin-btc-market-data-in-r",
+    "title": "Getting Cryptocurrency OHLC-V Market Data in R",
+    "section": "Loading Bitcoin (BTC) market data in R",
+    "text": "Loading Bitcoin (BTC) market data in R\n\n\n\n\n\n\nSupported Exchanges\n\n\n\n\n\n\n# load library\navailableExchanges()\n\nℹ Available exchanges\n✔ binance, kucoin, kraken, bitmart\n\n\n\n\n\n\n## Load hourly BTCUSDT\n## from Binance spot\ntail(\n  BTCUSDT &lt;- getQuote(\n    ticker   = \"BTCUSDT\",\n    source   = \"binance\",\n    futures  = FALSE,\n    interval = \"1h\" \n  )\n)\n\n\n\n\nBitcoin (BTC) OHLC-V Data\n\n\nIndex\nOpen\nHigh\nLow\nClose\nVolume\n\n\n\n\n2024-01-12 11:00:00\n46063.62\n46267\n45941.61\n45954.35\n1976.90053\n\n\n2024-01-12 12:00:00\n45954.35\n46109\n45667.47\n45866.56\n1852.17109\n\n\n2024-01-12 13:00:00\n45866.57\n45944.12\n45573.44\n45779.02\n2155.66091\n\n\n2024-01-12 14:00:00\n45779.02\n45904.66\n45250.01\n45442.02\n5702.97549\n\n\n2024-01-12 15:00:00\n45442.01\n45459.28\n44333.44\n44462.01\n9485.40906\n\n\n2024-01-12 16:00:00\n44462\n44675.88\n43500\n43616\n8138.41223\n\n\n\na Created with kable and kableExtra\n\n\n\n\n\n\n\n\n\n\n\n\n\n\ncryptoQuotes::chart(\n  chart = cryptoQuotes::kline(\n    cryptoQuotes::BTCUSDT\n  ) %&gt;%  cryptoQuotes::addVolume() %&gt;%  cryptoQuotes::addMA(\n    FUN = TTR::SMA,\n    n = 7\n  ) %&gt;%  cryptoQuotes::addMA(\n    FUN = TTR::SMA,\n    n = 14\n  ) %&gt;%\n     cryptoQuotes::addBBands() %&gt;%\n     cryptoQuotes::addMACD() %&gt;%\n     cryptoQuotes::addRSI()\n\n)\n\n\n\n\n\n\n\n\n\n\n\nInstalling the package\n\n\n\n\n\n\nCRAN Version\n\n# install from CRAN\ninstall.packages(\n  pkgs = 'cryptoQuotes',\n  dependencies = TRUE\n)\n\n\n\nDevelopment Version\n\n# install from github\ndevtools::install_github(\n  repo = 'https://github.com/serkor1/cryptoQuotes/',\n  ref = 'main'\n)\n\n\n\n\n\n\n\n\n\n\n\nPart of the R-Bloggers Community\n\n\n\nFollow R Bloggers for more R-related content!"
+  },
+  {
+    "objectID": "posts/post-with-code/index.html#second",
+    "href": "posts/post-with-code/index.html#second",
+    "title": "Post With Code",
+    "section": "second",
+    "text": "second"
+  },
+  {
+    "objectID": "posts/Elon Musk/index.html",
+    "href": "posts/Elon Musk/index.html",
+    "title": "What happens when Elon Musk Tweets about Dogecoin?",
+    "section": "",
+    "text": "Dogecoin; an all-time Elon Musk favorite. But what happens when he tweets (well now he X’es, I guess) about it?\nHere is a case-study of his famous tweet and how the markets reacted in the seconds up to, and after the tweet."
+  },
+  {
+    "objectID": "posts/Elon Musk/index.html#the-famous-tweet",
+    "href": "posts/Elon Musk/index.html#the-famous-tweet",
+    "title": "What happens when Elon Musk Tweets about Dogecoin?",
+    "section": "The famous tweet",
+    "text": "The famous tweet\n\n\n\nOne word: Doge\n\n— Elon Musk (@elonmusk) December 20, 2020"
+  },
+  {
+    "objectID": "posts/Elon Musk/index.html#the-famous-tweets",
+    "href": "posts/Elon Musk/index.html#the-famous-tweets",
+    "title": "What happens when Elon Musk Tweets about Dogecoin?",
+    "section": "The famous Tweets",
+    "text": "The famous Tweets\n\nThe first tweet\n\n\nOne word: Doge\n\n— Elon Musk (@elonmusk) December 20, 2020\n\n\n\n\nThe second tweet\n\n\nTesla merch buyable with Dogecoin\n\n— Elon Musk (@elonmusk) January 14, 2022"
+  },
+  {
+    "objectID": "posts/Elon Musk/index.html#analysing",
+    "href": "posts/Elon Musk/index.html#analysing",
+    "title": "What happens when Elon Musk Tweets about Dogecoin?",
+    "section": "Analysing",
+    "text": "Analysing\n\n## getting dogecoin\nDOGEUSDT &lt;- cryptoQuotes::getQuote(\n  ticker   = \"DOGEUSDT\",\n  source   = \"binance\",\n  futures  = FALSE,\n  interval = \"1s\",\n  from     = \"2020-12-20 9:30:00\",\n  to       = \"2020-12-20 9:33:00\"\n)\n\n\ncryptoQuotes::chart(\n  chart = cryptoQuotes::kline(\n    DOGEUSDT\n  )\n)\n\n\n\n\n\n\n## getting dogecoin\nDOGEUSDT &lt;- cryptoQuotes::getQuote(\n  ticker   = \"DOGEUSDT\",\n  source   = \"binance\",\n  futures  = FALSE,\n  interval = \"30m\",\n  from     = \"2020-12-20 8:00:00\",\n  to       = \"2020-12-20 13:00:00\"\n)\n\n\ncryptoQuotes::chart(\n  chart = cryptoQuotes::kline(\n    DOGEUSDT\n  )\n)"
+  },
+  {
+    "objectID": "posts/Elon Musk/index.html#analyzing-the-dogecoin-price-action",
+    "href": "posts/Elon Musk/index.html#analyzing-the-dogecoin-price-action",
+    "title": "What happens when Elon Musk Tweets about Dogecoin?",
+    "section": "Analyzing the Dogecoin price action",
+    "text": "Analyzing the Dogecoin price action\n\n\n\n\n\n\nTime conversion\n\n\n\n\n\nThe getQuote()-function assumes times are passed as UTC, and this blogpost is written from CET\n\n# load library\nas.POSIXct(\n  as.POSIXct(\"2020-12-20 9:30:00\", tz = 'UTC'),\n  tz = \"CET\"\n)\n\n[1] \"2020-12-20 10:30:00 CET\"\n\n\n\n\n\nTo analyze the price action around the tweet, we will look at the 1 second and 5 minute chart.\n\nAnalyzing price action on the 1 second chart\n\n## getting Dogecoin\n## on the 1 second chart\n## from Binance around the\n## time Elon Musk tweeted\nDOGEUSDT &lt;- cryptoQuotes::getQuote(\n  ticker   = \"DOGEUSDT\",\n  source   = \"binance\",\n  futures  = FALSE,\n  interval = \"1s\",\n  from     = \"2020-12-20 9:29:00\",\n  to       = \"2020-12-20 9:32:00\"\n)\n\n\n## chart the price action\n## using klines\ncryptoQuotes::chart(\n  chart = cryptoQuotes::kline(\n    DOGEUSDT\n  )\n)\n\n\n\n\n\nAt its lowest around the time of tweet Dogecoin were priced at 0.0039468$, and at its highest it were priced at 0.0042091$ - that is an 7% increase!\n\n\nAnalyzing price action on the 5 minute chart\n\n## getting Dogecoin\n## on the 5 minute chart\n## from Binance around the\n## time Elon Musk tweeted\nDOGEUSDT &lt;- cryptoQuotes::getQuote(\n  ticker   = \"DOGEUSDT\",\n  source   = \"binance\",\n  futures  = FALSE,\n  interval = \"5m\",\n  from     = \"2020-12-20 9:25:00\",\n  to       = \"2020-12-20 10:00:00\"\n)\n\n\n## chart the price action\n## using klines\ncryptoQuotes::chart(\n  chart = cryptoQuotes::kline(\n    DOGEUSDT\n  )\n)\n\n\n\n\n\nAt its lowest around the time of tweet Dogecoin were priced at 0.0039456$, and at its highest it were priced at 0.0045542$ - that is an 15% increase!"
+  },
+  {
+    "objectID": "posts/Elon Musk/index.html#the-power-of-tweets-or-elon-musk",
+    "href": "posts/Elon Musk/index.html#the-power-of-tweets-or-elon-musk",
+    "title": "What happens when Elon Musk Tweets about Dogecoin?",
+    "section": "The power of tweets, or Elon Musk",
+    "text": "The power of tweets, or Elon Musk\nAn increase of 7% over the course 3 minutes and 15% within 35 minutes is, albeit not uncommon in the cryptocurrency markets, scary - especially if you are a Bear!"
+  },
+  {
+    "objectID": "posts/ElonMusk-Dogecoin/index.html",
+    "href": "posts/ElonMusk-Dogecoin/index.html",
+    "title": "What happens when Elon Musk Tweets about Dogecoin?",
+    "section": "",
+    "text": "Dogecoin; an all-time Elon Musk favorite. But what happens when he tweets (well now he X’es, I guess) about it?\nHere is a case-study of his famous tweet and how the markets reacted in the seconds up to, and after the tweet."
+  },
+  {
+    "objectID": "posts/ElonMusk-Dogecoin/index.html#the-famous-tweet",
+    "href": "posts/ElonMusk-Dogecoin/index.html#the-famous-tweet",
+    "title": "What happens when Elon Musk Tweets about Dogecoin?",
+    "section": "The famous tweet",
+    "text": "The famous tweet\n\n\n\nOne word: Doge\n\n— Elon Musk (@elonmusk) December 20, 2020"
+  },
+  {
+    "objectID": "posts/ElonMusk-Dogecoin/index.html#analyzing-the-dogecoin-price-action",
+    "href": "posts/ElonMusk-Dogecoin/index.html#analyzing-the-dogecoin-price-action",
+    "title": "What happens when Elon Musk Tweets about Dogecoin?",
+    "section": "Analyzing the Dogecoin price action",
+    "text": "Analyzing the Dogecoin price action\n\n\n\n\n\n\nTime conversion\n\n\n\n\n\nThe getQuote()-function assumes times are passed as UTC, and this blogpost is written from CET\n\n# load library\nas.POSIXct(\n  as.POSIXct(\"2020-12-20 9:30:00\", tz = 'UTC'),\n  tz = \"CET\"\n)\n\n[1] \"2020-12-20 10:30:00 CET\"\n\n\n\n\n\nTo analyze the price action around the tweet, we will look at the 1 second and 5 minute chart.\n\nAnalyzing price action on the 1 second chart\n\n## getting Dogecoin\n## on the 1 second chart\n## from Binance around the\n## time Elon Musk tweeted\nDOGEUSDT &lt;- cryptoQuotes::getQuote(\n  ticker   = \"DOGEUSDT\",\n  source   = \"binance\",\n  futures  = FALSE,\n  interval = \"1s\",\n  from     = \"2020-12-20 9:29:00\",\n  to       = \"2020-12-20 9:32:00\"\n)\n\n\n## chart the price action\n## using klines\ncryptoQuotes::chart(\n  chart = cryptoQuotes::kline(\n    DOGEUSDT\n  )\n)\n\n\n\n\n\nAt its lowest around the time of tweet Dogecoin were priced at 0.0039468$, and at its highest it were priced at 0.0042091$ - that is an 7% increase!\n\n\nAnalyzing price action on the 5 minute chart\n\n## getting Dogecoin\n## on the 5 minute chart\n## from Binance around the\n## time Elon Musk tweeted\nDOGEUSDT &lt;- cryptoQuotes::getQuote(\n  ticker   = \"DOGEUSDT\",\n  source   = \"binance\",\n  futures  = FALSE,\n  interval = \"5m\",\n  from     = \"2020-12-20 9:25:00\",\n  to       = \"2020-12-20 10:00:00\"\n)\n\n\n## chart the price action\n## using klines\ncryptoQuotes::chart(\n  chart = cryptoQuotes::kline(\n    DOGEUSDT\n  )\n)\n\n\n\n\n\nAt its lowest around the time of tweet Dogecoin were priced at 0.0039456$, and at its highest it were priced at 0.0045542$ - that is an 15% increase!"
+  },
+  {
+    "objectID": "posts/ElonMusk-Dogecoin/index.html#the-power-of-tweets-or-elon-musk",
+    "href": "posts/ElonMusk-Dogecoin/index.html#the-power-of-tweets-or-elon-musk",
+    "title": "What happens when Elon Musk Tweets about Dogecoin?",
+    "section": "The power of tweets, or Elon Musk",
+    "text": "The power of tweets, or Elon Musk\nAn increase of 7% over the course 3 minutes and 15% within 35 minutes is, albeit not uncommon in the cryptocurrency markets, scary - especially if you are a Bear!"
+  },
+  {
+    "objectID": "CODE_OF_CONDUCT.html",
+    "href": "CODE_OF_CONDUCT.html",
+    "title": "Contributor Covenant Code of Conduct",
+    "section": "",
+    "text": "We as members, contributors, and leaders pledge to make participation in our community a harassment-free experience for everyone, regardless of age, body size, visible or invisible disability, ethnicity, sex characteristics, gender identity and expression, level of experience, education, socio-economic status, nationality, personal appearance, race, caste, color, religion, or sexual identity and orientation.\nWe pledge to act and interact in ways that contribute to an open, welcoming, diverse, inclusive, and healthy community.\n\n\n\nExamples of behavior that contributes to a positive environment for our community include:\n\nDemonstrating empathy and kindness toward other people\nBeing respectful of differing opinions, viewpoints, and experiences\nGiving and gracefully accepting constructive feedback\nAccepting responsibility and apologizing to those affected by our mistakes, and learning from the experience\nFocusing on what is best not just for us as individuals, but for the overall community\n\nExamples of unacceptable behavior include:\n\nThe use of sexualized language or imagery, and sexual attention or advances of any kind\nTrolling, insulting or derogatory comments, and personal or political attacks\nPublic or private harassment\nPublishing others’ private information, such as a physical or email address, without their explicit permission\nOther conduct which could reasonably be considered inappropriate in a professional setting\n\n\n\n\nCommunity leaders are responsible for clarifying and enforcing our standards of acceptable behavior and will take appropriate and fair corrective action in response to any behavior that they deem inappropriate, threatening, offensive, or harmful.\nCommunity leaders have the right and responsibility to remove, edit, or reject comments, commits, code, wiki edits, issues, and other contributions that are not aligned to this Code of Conduct, and will communicate reasons for moderation decisions when appropriate.\n\n\n\nThis Code of Conduct applies within all community spaces, and also applies when an individual is officially representing the community in public spaces. Examples of representing our community include using an official e-mail address, posting via an official social media account, or acting as an appointed representative at an online or offline event.\n\n\n\nInstances of abusive, harassing, or otherwise unacceptable behavior may be reported to the community leaders responsible for enforcement at serkor1@duck.com. All complaints will be reviewed and investigated promptly and fairly.\nAll community leaders are obligated to respect the privacy and security of the reporter of any incident.\n\n\n\nCommunity leaders will follow these Community Impact Guidelines in determining the consequences for any action they deem in violation of this Code of Conduct:\n\n\nCommunity Impact: Use of inappropriate language or other behavior deemed unprofessional or unwelcome in the community.\nConsequence: A private, written warning from community leaders, providing clarity around the nature of the violation and an explanation of why the behavior was inappropriate. A public apology may be requested.\n\n\n\nCommunity Impact: A violation through a single incident or series of actions.\nConsequence: A warning with consequences for continued behavior. No interaction with the people involved, including unsolicited interaction with those enforcing the Code of Conduct, for a specified period of time. This includes avoiding interactions in community spaces as well as external channels like social media. Violating these terms may lead to a temporary or permanent ban.\n\n\n\nCommunity Impact: A serious violation of community standards, including sustained inappropriate behavior.\nConsequence: A temporary ban from any sort of interaction or public communication with the community for a specified period of time. No public or private interaction with the people involved, including unsolicited interaction with those enforcing the Code of Conduct, is allowed during this period. Violating these terms may lead to a permanent ban.\n\n\n\nCommunity Impact: Demonstrating a pattern of violation of community standards, including sustained inappropriate behavior, harassment of an individual, or aggression toward or disparagement of classes of individuals.\nConsequence: A permanent ban from any sort of public interaction within the community.\n\n\n\n\nThis Code of Conduct is adapted from the Contributor Covenant, version 2.1, available at https://www.contributor-covenant.org/version/2/1/code_of_conduct.html.\nCommunity Impact Guidelines were inspired by [Mozilla’s code of conduct enforcement ladder][https://github.com/mozilla/inclusion].\nFor answers to common questions about this code of conduct, see the FAQ at https://www.contributor-covenant.org/faq. Translations are available at https://www.contributor-covenant.org/translations."
+  },
+  {
+    "objectID": "CODE_OF_CONDUCT.html#our-pledge",
+    "href": "CODE_OF_CONDUCT.html#our-pledge",
+    "title": "Contributor Covenant Code of Conduct",
+    "section": "",
+    "text": "We as members, contributors, and leaders pledge to make participation in our community a harassment-free experience for everyone, regardless of age, body size, visible or invisible disability, ethnicity, sex characteristics, gender identity and expression, level of experience, education, socio-economic status, nationality, personal appearance, race, caste, color, religion, or sexual identity and orientation.\nWe pledge to act and interact in ways that contribute to an open, welcoming, diverse, inclusive, and healthy community."
+  },
+  {
+    "objectID": "CODE_OF_CONDUCT.html#our-standards",
+    "href": "CODE_OF_CONDUCT.html#our-standards",
+    "title": "Contributor Covenant Code of Conduct",
+    "section": "",
+    "text": "Examples of behavior that contributes to a positive environment for our community include:\n\nDemonstrating empathy and kindness toward other people\nBeing respectful of differing opinions, viewpoints, and experiences\nGiving and gracefully accepting constructive feedback\nAccepting responsibility and apologizing to those affected by our mistakes, and learning from the experience\nFocusing on what is best not just for us as individuals, but for the overall community\n\nExamples of unacceptable behavior include:\n\nThe use of sexualized language or imagery, and sexual attention or advances of any kind\nTrolling, insulting or derogatory comments, and personal or political attacks\nPublic or private harassment\nPublishing others’ private information, such as a physical or email address, without their explicit permission\nOther conduct which could reasonably be considered inappropriate in a professional setting"
+  },
+  {
+    "objectID": "CODE_OF_CONDUCT.html#enforcement-responsibilities",
+    "href": "CODE_OF_CONDUCT.html#enforcement-responsibilities",
+    "title": "Contributor Covenant Code of Conduct",
+    "section": "",
+    "text": "Community leaders are responsible for clarifying and enforcing our standards of acceptable behavior and will take appropriate and fair corrective action in response to any behavior that they deem inappropriate, threatening, offensive, or harmful.\nCommunity leaders have the right and responsibility to remove, edit, or reject comments, commits, code, wiki edits, issues, and other contributions that are not aligned to this Code of Conduct, and will communicate reasons for moderation decisions when appropriate."
+  },
+  {
+    "objectID": "CODE_OF_CONDUCT.html#scope",
+    "href": "CODE_OF_CONDUCT.html#scope",
+    "title": "Contributor Covenant Code of Conduct",
+    "section": "",
+    "text": "This Code of Conduct applies within all community spaces, and also applies when an individual is officially representing the community in public spaces. Examples of representing our community include using an official e-mail address, posting via an official social media account, or acting as an appointed representative at an online or offline event."
+  },
+  {
+    "objectID": "CODE_OF_CONDUCT.html#enforcement",
+    "href": "CODE_OF_CONDUCT.html#enforcement",
+    "title": "Contributor Covenant Code of Conduct",
+    "section": "",
+    "text": "Instances of abusive, harassing, or otherwise unacceptable behavior may be reported to the community leaders responsible for enforcement at serkor1@duck.com. All complaints will be reviewed and investigated promptly and fairly.\nAll community leaders are obligated to respect the privacy and security of the reporter of any incident."
+  },
+  {
+    "objectID": "CODE_OF_CONDUCT.html#enforcement-guidelines",
+    "href": "CODE_OF_CONDUCT.html#enforcement-guidelines",
+    "title": "Contributor Covenant Code of Conduct",
+    "section": "",
+    "text": "Community leaders will follow these Community Impact Guidelines in determining the consequences for any action they deem in violation of this Code of Conduct:\n\n\nCommunity Impact: Use of inappropriate language or other behavior deemed unprofessional or unwelcome in the community.\nConsequence: A private, written warning from community leaders, providing clarity around the nature of the violation and an explanation of why the behavior was inappropriate. A public apology may be requested.\n\n\n\nCommunity Impact: A violation through a single incident or series of actions.\nConsequence: A warning with consequences for continued behavior. No interaction with the people involved, including unsolicited interaction with those enforcing the Code of Conduct, for a specified period of time. This includes avoiding interactions in community spaces as well as external channels like social media. Violating these terms may lead to a temporary or permanent ban.\n\n\n\nCommunity Impact: A serious violation of community standards, including sustained inappropriate behavior.\nConsequence: A temporary ban from any sort of interaction or public communication with the community for a specified period of time. No public or private interaction with the people involved, including unsolicited interaction with those enforcing the Code of Conduct, is allowed during this period. Violating these terms may lead to a permanent ban.\n\n\n\nCommunity Impact: Demonstrating a pattern of violation of community standards, including sustained inappropriate behavior, harassment of an individual, or aggression toward or disparagement of classes of individuals.\nConsequence: A permanent ban from any sort of public interaction within the community."
+  },
+  {
+    "objectID": "CODE_OF_CONDUCT.html#attribution",
+    "href": "CODE_OF_CONDUCT.html#attribution",
+    "title": "Contributor Covenant Code of Conduct",
+    "section": "",
+    "text": "This Code of Conduct is adapted from the Contributor Covenant, version 2.1, available at https://www.contributor-covenant.org/version/2/1/code_of_conduct.html.\nCommunity Impact Guidelines were inspired by [Mozilla’s code of conduct enforcement ladder][https://github.com/mozilla/inclusion].\nFor answers to common questions about this code of conduct, see the FAQ at https://www.contributor-covenant.org/faq. Translations are available at https://www.contributor-covenant.org/translations."
+  },
+  {
+    "objectID": "cryptoQuotes.html",
+    "href": "cryptoQuotes.html",
+    "title": "Getting Cryptocurrency OHLC-V Market Data in R",
+    "section": "",
+    "text": "Source Code\n  \n  \n    \n     Documentation\n  \n\n      \nA high-level API client for easy access to cryptocurrency market data, including detailed OHLC-V (Open, High, Low, Close, Volume) candles and sentiment indicators. Offers flexible data granularity (seconds to months) from major exchanges, ensuring reliable and stable market information without low-level API calls.\n# load library\nlibrary(cryptoQuotes)"
+  },
+  {
+    "objectID": "cryptoQuotes.html#loading-bitcoin-btc-market-data-in-r",
+    "href": "cryptoQuotes.html#loading-bitcoin-btc-market-data-in-r",
+    "title": "Getting Cryptocurrency OHLC-V Market Data in R",
+    "section": "Loading Bitcoin (BTC) market data in R",
+    "text": "Loading Bitcoin (BTC) market data in R\n\n\n\n\n\n\nSupported Exchanges\n\n\n\n\n\n\n# load library\navailableExchanges()\n\nℹ Available exchanges\n✔ binance, kucoin, kraken, bitmart\n\n\n\n\n\n\n## Load hourly BTCUSDT\n## from Binance spot\ntail(\n  BTCUSDT &lt;- getQuote(\n    ticker   = \"BTCUSDT\",\n    source   = \"binance\",\n    futures  = FALSE,\n    interval = \"1h\" \n  )\n)\n\n\n\n\nBitcoin (BTC) OHLC-V Data\n\n\nIndex\nOpen\nHigh\nLow\nClose\nVolume\n\n\n\n\n2024-01-17 09:00:00\n42728.76\n42830\n42674\n42678.57\n938.2664\n\n\n2024-01-17 10:00:00\n42678.56\n42850.55\n42622.36\n42850.04\n1193.04037\n\n\n2024-01-17 11:00:00\n42850.05\n42850.55\n42672.95\n42680.16\n1093.25163\n\n\n2024-01-17 12:00:00\n42680.16\n42788\n42411\n42782.43\n2445.67123\n\n\n2024-01-17 13:00:00\n42782.42\n42782.43\n42518\n42609.84\n1305.63482\n\n\n2024-01-17 14:00:00\n42609.83\n42609.84\n42365.58\n42405.05\n1838.84526\n\n\n\na Created with kable and kableExtra\n\n\n\n\n\n\n\n\n\n\n\n\n\n\ncryptoQuotes::chart(\n  chart = cryptoQuotes::kline(\n    cryptoQuotes::BTCUSDT\n  ) %&gt;%  cryptoQuotes::addVolume() %&gt;%  cryptoQuotes::addMA(\n    FUN = TTR::SMA,\n    n = 7\n  ) %&gt;%  cryptoQuotes::addMA(\n    FUN = TTR::SMA,\n    n = 14\n  ) %&gt;%\n     cryptoQuotes::addBBands() %&gt;%\n     cryptoQuotes::addMACD() %&gt;%\n     cryptoQuotes::addRSI()\n\n)\n\n\n\n\n\n\n\n\n\n\n\nInstalling the package\n\n\n\n\n\n\nCRAN Version\n\n# install from CRAN\ninstall.packages(\n  pkgs = 'cryptoQuotes',\n  dependencies = TRUE\n)\n\n\n\nDevelopment Version\n\n# install from github\ndevtools::install_github(\n  repo = 'https://github.com/serkor1/cryptoQuotes/',\n  ref = 'main'\n)"
+  }
+]
