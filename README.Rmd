@@ -11,9 +11,10 @@ knitr::opts_chunk$set(
 )
 ```
 
-# A(nother) Quarto Blog <img src="images/main.png" align="right" height="240" alt="" />
+# A(nother) Quarto Blog <a href="https://serkor1.github.io/"><img src="images/main.png" align="right" height="240" alt="cryptocurrency blog in R"/></a>
 
 <!-- badges: start -->
+![](https://github.com/serkor1/serkor1.github.io/actions/workflows/publish.yml/badge.svg)
 <!-- badges: end -->
 
 This Quarto blog is primarily dedicated to the development of the `cryptoQuotes`-package; you can read more about it [here](https://github.com/serkor1/cryptoQuotes). 
@@ -21,7 +22,6 @@ This Quarto blog is primarily dedicated to the development of the `cryptoQuotes`
 ## Call for blog posts
 
 If you are an `R`-package developer with primary focus on Finance and Cryptocurrencies, feel free to create a pull-request with your post.
-
 
 ## Code of Conduct
 

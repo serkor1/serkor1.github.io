@@ -49,6 +49,8 @@ website:
         href: https://www.r-bloggers.com/
         target: _blank
       - about.qmd
+      - icon: rss
+        href: index.xml
     left:
         - icon: code-slash
           text: "Cryptocurrency with R"
