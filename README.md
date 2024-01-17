@@ -1,10 +1,10 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# A(nother) Quarto Blog <img src="images/main.png" align="right" height="240" alt="" href="https://serkor1.github.io/"/>
+# A(nother) Quarto Blog <a href="https://serkor1.github.io/"><img src="images/main.png" align="right" height="240" alt="cryptocurrency blog in R"/></a>
 
-<a href="https://serkor1.github.io/"><img src="images/main.png" align="right" height="240" alt=""/></a>
 <!-- badges: start -->
+
 ![](https://github.com/serkor1/serkor1.github.io/actions/workflows/publish.yml/badge.svg)
 <!-- badges: end -->
 
